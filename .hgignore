@@ -1,0 +1,7 @@
+
+syntax: regexp
+^src/sqlalchemy$
+syntax: regexp
+^src/filelisting\.py$
+syntax: regexp
+^src/treeviewcolumn\.py$
