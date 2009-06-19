@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkListStore" id="listFiles">
+    <columns>
+      <!-- column-name id -->
+      <column type="gint"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkTreeStore" id="treeVolumes">
+    <columns>
+      <!-- column-name id -->
+      <column type="gint"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name stock-id -->
+      <column type="gchararray"/>
+      <!-- column-name type -->
+      <column type="gint"/>
+      <!-- column-name editable -->
+      <column type="gboolean"/>
+    </columns>
+  </object>
+  <object class="GtkWindow" id="window">
+    <property name="visible">True</property>
+    <property name="title" translatable="yes">pytalog</property>
+    <property name="default_width">640</property>
+    <property name="default_height">480</property>
+    <signal name="destroy" handler="on_window_destroy"/>
+    <child>
+      <object class="GtkVBox" id="vbox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuBar" id="menubar">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkMenuItem" id="menuitemFile">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menuFile">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemNewCatalog">
+                        <property name="label" translatable="yes">New catalog</property>
+                        <property name="visible">True</property>
+                        <property name="image">image_new_catalog</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menuitemNewCatalog_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemOpenCatalog">
+                        <property name="label" translatable="yes">Add volume to catalog</property>
+                        <property name="visible">True</property>
+                        <property name="image">image_open</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menuitemOpenCatalog_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemQuit">
+                        <property name="label">gtk-quit</property>
+                        <property name="visible">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menuitemQuit_activate"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitemHelp">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menuHelp">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemAbout">
+                        <property name="label">gtk-about</property>
+                        <property name="visible">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_menuitemAbout_activate"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHPaned" id="hpaned_principal">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <child>
+              <object class="GtkTreeView" id="treeviewVolumes">
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="model">treeVolumes</property>
+                <property name="headers_visible">False</property>
+                <property name="headers_clickable">False</property>
+                <property name="expander_column">columnVolumesName</property>
+                <signal name="row_expanded" handler="on_treeviewVolumes_row_expanded"/>
+                <signal name="cursor_changed" handler="on_treeviewVolumes_cursor_changed"/>
+                <signal name="row_activated" handler="on_treeviewVolumes_row_activated"/>
+                <signal name="button_release_event" handler="on_treeviewVolumes_button_release_event"/>
+                <child>
+                  <object class="GtkTreeViewColumn" id="columnVolumesName">
+                    <property name="title">column</property>
+                    <child>
+                      <object class="GtkCellRendererPixbuf" id="cellVolumesPix"/>
+                      <attributes>
+                        <attribute name="stock-id">2</attribute>
+                      </attributes>
+                    </child>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellVolumesName">
+                        <signal name="edited" handler="on_cellVolumesName_edited"/>
+                      </object>
+                      <attributes>
+                        <attribute name="editable">4</attribute>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTreeView" id="treeviewFiles">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="model">listFiles</property>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="statusbar">
+            <property name="visible">True</property>
+            <property name="spacing">2</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkImage" id="image_new_catalog">
+    <property name="visible">True</property>
+    <property name="stock">gtk-new</property>
+  </object>
+  <object class="GtkImage" id="image_open">
+    <property name="visible">True</property>
+    <property name="stock">gtk-open</property>
+  </object>
+  <object class="GtkImage" id="image_catalog">
+    <property name="visible">True</property>
+    <property name="stock">gtk-harddisk</property>
+  </object>
+  <object class="GtkImage" id="image_volume">
+    <property name="visible">True</property>
+    <property name="stock">gtk-cdrom</property>
+  </object>
+  <object class="GtkMenu" id="menu_tree">
+    <property name="visible">True</property>
+    <child>
+      <object class="GtkMenuItem" id="menu_tree_add_volume">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Add volume</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_tree_add_volume_activate"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu_tree_rename">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Rename catalog</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_tree_rename_activate"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu_tree_delete">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Delete catalog</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_tree_delete_activate"/>
+      </object>
+    </child>
+  </object>
+</interface>
