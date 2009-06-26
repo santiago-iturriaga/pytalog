@@ -10,12 +10,11 @@ import gtk
 from Pytalog.Lib import get_manager 
 
 if sys.platform == 'win32':
-  import Pytalog.Platform.Windows as sysinfo
-elif sys.platform == 'darwin':
-  #import mac_sysinfo as sysinfo
-  pass
+    import Pytalog.Platform.Windows as sysinfo
 elif 'linux' in sys.platform:
-  import Pytalog.Platform.Linux as sysinfo
+    import Pytalog.Platform.Linux as sysinfo
+else:
+    import Pytalog.Platform.NotSupported as sysinfo
 
 class AddVolume(object):
     '''
@@ -35,7 +34,9 @@ class AddVolume(object):
         self.__parent = parent_widget
         self.__catalog = get_manager().get_data().get_catalog(catalog_id)
         
-        sysinfo.get_drives()
+        drives = sysinfo.get_drives()
+        print "Dispositivos:\n"
+        print drives
         
         self.__filechooser.show()
    
