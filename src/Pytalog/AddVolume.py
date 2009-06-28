@@ -10,6 +10,8 @@ import gtk
 from os import listdir
 from os.path import exists, isdir, isfile, getsize, join, getmtime
 
+from datetime import date
+
 from Pytalog.Lib import get_manager
 
 if sys.platform == 'win32':
@@ -127,7 +129,7 @@ class AddVolume(object):
                     directories.append({'name':unicode(item), 'full_name':unicode(relative_item)})
                 elif isfile(full_item):
                     size = getsize(full_item)
-                    mod_time = getmtime(full_item)
+                    mod_time = date.fromtimestamp(getmtime(full_item))
                     files.append({'name':unicode(item), 'full_name':unicode(relative_item), 'size':size, 'mtime':mod_time})
                     
             return (directories, files)
