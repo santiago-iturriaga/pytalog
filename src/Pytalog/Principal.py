@@ -32,6 +32,8 @@ class Principal(object):
         self.__tree_view = CatalogTreeView(self, self.__builder)
         self.__tree_view.load_catalogs()
 
+        self.__list_view = CatalogListView(self, self.__builder)
+
     def show(self):
         self.__principal.show()
 
@@ -44,7 +46,11 @@ class Principal(object):
         el tree view.
         '''
         
+        self.__list_view.unload_volume()
         self.__tree_view.load_catalogs()
+
+    def load_volume(self, volume_id):
+        self.__list_view.load_volume(volume_id)
 
     '''
     Signals del menu principal.
@@ -89,6 +95,89 @@ class Principal(object):
        
     def on_cellVolumesName_edited(self, widget, path, new_text, data=None):
         self.__tree_view.on_cellVolumesName_edited(widget, path, new_text, data)
+
+    def on_button_rename_ok_clicked(self, widget, data=None):
+        self.__tree_view.on_button_rename_ok_clicked(widget, data)
+    
+    def on_button_rename_cancel_clicked(self, widget, data=None):
+        self.__tree_view.on_button_rename_cancel_clicked(widget, data)
+        
+    '''
+    Signals del listview
+    '''
+    def on_treeviewFiles_row_activated(self, widget, path, view_column, data=None):
+        self.__list_view.on_treeviewFiles_row_activated(widget, path, view_column, data)
+
+class CatalogListView(object):
+    '''
+    Clase encargada del comportamiento del treeview de archivos y directorios.
+    '''
+    
+    ICON_DIRECTORY = 'image_directory'
+    ICON_FILE = 'image_file'
+    
+    LIST_MODEL = 'listFiles'
+    TREE_VIEW = 'treeviewFiles'
+    
+    ITEM_TYPE_PARENT = -1
+    ITEM_TYPE_DIRECTORY = 0
+    ITEM_TYPE_FILE = 1
+    
+    def __init__(self, principal, builder):
+        self.__principal = principal
+        self.__builder = builder
+    
+        imageDirectory = self.__builder.get_object(CatalogListView.ICON_DIRECTORY)
+        self.__imageDirectoryStock = imageDirectory.get_stock()[0]
+
+        imageFile = self.__builder.get_object(CatalogListView.ICON_FILE)
+        self.__imageFileStock = imageFile.get_stock()[0]
+        
+        self.__tree_view = self.__builder.get_object(CatalogListView.TREE_VIEW)
+        self.__list_store = self.__builder.get_object(CatalogListView.LIST_MODEL)
+   
+    def load_volume(self, volume_id):
+        self.__volume_id = volume_id
+        self.load_volume_directory(None)
+
+    def load_volume_directory(self, directory_id):
+        self.unload_directory()
+        
+        (directories, files, parent_id) = get_manager().get_data().get_volume_content(self.__volume_id, directory_id)
+
+        if parent_id:
+            self.__list_store.append([parent_id, '..', CatalogListView.ITEM_TYPE_PARENT, self.__imageDirectoryStock, ''])
+        
+        for directory in directories:
+            self.__list_store.append([directory.directory_id, directory.name, CatalogListView.ITEM_TYPE_DIRECTORY, self.__imageDirectoryStock, ''])
+
+        for file in files:
+            self.__list_store.append([file.file_id, file.name, CatalogListView.ITEM_TYPE_FILE, self.__imageFileStock, file.size])
+ 
+    def unload_volume(self):
+        self.__volume_id = None
+
+    def unload_directory(self):
+        self.__list_store.clear()
+        
+    def __get_item_from_path(self, path):
+        '''
+        Dado un path de un item en el listview retorna una tupla con (id, type, iter).
+        '''
+        iter = self.__list_store.get_iter(path)
+
+        id = self.__list_store.get_value(iter, 0)
+        type = self.__list_store.get_value(iter, 2)
+        
+        return (id, type, iter)
+        
+    def on_treeviewFiles_row_activated(self, widget, path, view_column, data=None):
+        (id, type, iter) = self.__get_item_from_path(path)
+        
+        if (type == CatalogListView.ITEM_TYPE_DIRECTORY):
+            self.load_volume_directory(id)
+        elif (type == CatalogListView.ITEM_TYPE_PARENT):
+            self.load_volume_directory(id)
     
 class CatalogTreeView(object):
     '''
@@ -136,7 +225,7 @@ class CatalogTreeView(object):
 
     def __get_item_from_path(self, path):
         '''
-        Dado un path de un item en el treeview retorna una lista con (id, type, iter).
+        Dado un path de un item en el treeview retorna una tupla con (id, type, iter).
         '''
         iter = self.__tree_store.get_iter(path)
 
@@ -152,8 +241,10 @@ class CatalogTreeView(object):
         #print "Selected: <'%s'>" % (catalog_or_volume_id)
           
     def on_treeviewVolumes_row_activated(self, widget, path, view_column, data=None):
-        #print "Activated: <'%s'>" % (path)
-        pass
+        (id, type, iter) = self.__get_item_from_path(path)
+        
+        if (type == CatalogTreeView.ITEM_TYPE_VOLUME):
+            self.__principal.load_volume(id)
     
     def on_treeviewVolumes_row_expanded(self, widget, iter, path, data=None):
         catalog_id = self.__tree_store.get_value(iter, 0)
@@ -187,11 +278,20 @@ class CatalogTreeView(object):
     
     def on_menu_tree_rename_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
-        column = self.__tree_view.get_column(0)
-        renderer = column.get_cell_renderers()[1]
-                
-        self.__tree_view.grab_focus()
-        self.__tree_view.set_cursor_on_cell(path, column, renderer, True)
+        name = self.__tree_store.get_value(iter, 1)
+        #column = self.__tree_view.get_column(0)
+        #renderer = column.get_cell_renderers()[1]
+        #self.__tree_view.grab_focus()
+        #self.__tree_view.set_cursor_on_cell(path, column, renderer, True)
+        self.__dialog_rename = self.__builder.get_object('dialog_rename')
+        self.__dialog_rename.info = (id, type, path, iter)
+        self.__builder.get_object('entry_rename').set_text(name)
+        
+        if self.__dialog_rename.run() == gtk.RESPONSE_OK:
+            pass
+        
+        self.__dialog_rename.hide()       
+        self.__dialog_rename = None
     
     def on_menu_tree_delete_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
@@ -203,13 +303,30 @@ class CatalogTreeView(object):
             if (get_manager().get_data().del_volume(id)):
                 self.__tree_store.remove(iter)
        
-    def on_cellVolumesName_edited(self, widget, path, new_text, data=None):
-        (id, type, iter) = self.__get_item_from_path(path)
-        
-        if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-            if (get_manager().get_data().ren_catalog(id, new_text)):
-                self.__tree_store.set_value(iter, 1, new_text)
-        else:
-            if (get_manager().get_data().ren_volume(id, new_text)):
-                self.__tree_store.set_value(iter, 1, new_text)
+    #def on_cellVolumesName_edited(self, widget, path, new_text, data=None):
+    #    (id, type, iter) = self.__get_item_from_path(path)
+    #    
+    #    if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
+    #        if (get_manager().get_data().ren_catalog(id, new_text)):
+    #            self.__tree_store.set_value(iter, 1, new_text)
+    #    else:
+    #        if (get_manager().get_data().ren_volume(id, new_text)):
+    #            self.__tree_store.set_value(iter, 1, new_text)
                 
+    def on_button_rename_ok_clicked(self, widget, data=None):
+        if self.__dialog_rename:
+            (id, type, path, iter) = self.__dialog_rename.info
+            new_text = self.__builder.get_object('entry_rename').get_text()
+            
+            if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
+                if (get_manager().get_data().ren_catalog(id, new_text)):
+                    self.__tree_store.set_value(iter, 1, new_text)
+            else:
+                if (get_manager().get_data().ren_volume(id, new_text)):
+                    self.__tree_store.set_value(iter, 1, new_text)
+            self.__dialog_rename.response(gtk.RESPONSE_OK)
+    
+    def on_button_rename_cancel_clicked(self, widget, data=None):
+        if self.__dialog_rename:
+            self.__dialog_rename.response(gtk.RESPONSE_CANCEL)
+    
