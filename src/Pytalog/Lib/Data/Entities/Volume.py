@@ -20,7 +20,6 @@ class Volume(Base):
 
     volume_id = Column(Integer, primary_key=True)
     label = Column(String, nullable=False)
-    #size = Column(Numeric, nullable=False)
     created_on = Column(DateTime, nullable=False)
     
     catalog_id = Column(Integer, ForeignKey("catalogs.catalog_id"), nullable=False)
@@ -32,7 +31,6 @@ class Volume(Base):
     def __init__(self, catalog_id, label, created_on):
         self.catalog_id = catalog_id
         self.label = label
-        #self.size = size
         self.created_on = created_on
         
     def __repr__(self):
@@ -56,7 +54,7 @@ class VolumeDirectory(Base):
     parent_directory_id = Column(Integer, ForeignKey('volumesdirectories.directory_id'), nullable=True)
     parent_directory = relation('VolumeDirectory', cascade="all, delete", single_parent=True)
     
-    files = relation("VolumeFile", cascade="all, delete")
+    files = relation("VolumeFile", cascade="all, delete", order_by="VolumeFile.name")
     
     def __init__(self, name, full_name, volume_id, parent_directory_id):
         self.name = name
@@ -78,6 +76,8 @@ class VolumeFile(Base):
     file_id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     full_name = Column(String, nullable=False)
+    name_extension_only = Column(String, nullable=False)
+    name_without_extension = Column(String, nullable=False) 
     size = Column(Numeric, nullable=False)
     modified_on = Column(DateTime, nullable=False)
     
@@ -87,9 +87,11 @@ class VolumeFile(Base):
     parent_directory_id = Column(Integer, ForeignKey(VolumeDirectory.directory_id), nullable=False)
     parent_directory = relation(VolumeDirectory, single_parent=True)
     
-    def __init__(self, name, full_name, size, modified_on, volume_id, parent_directory_id):
+    def __init__(self, name, full_name, name_without_extension, name_extension_only, size, modified_on, volume_id, parent_directory_id):
         self.name = name
         self.full_name = full_name
+        self.name_without_extension = name_without_extension
+        self.name_extension_only = name_extension_only
         self.size = size
         self.modified_on = modified_on
         self.volume_id = volume_id

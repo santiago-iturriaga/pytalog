@@ -164,6 +164,9 @@ class DataManager(object):
         return volumes
     
     def get_volume(self, volume_id, session=None):
+        '''
+        Obtiene un volumen.
+        '''
         if (not session):
             session = self.__db_session()
             
@@ -176,6 +179,11 @@ class DataManager(object):
         return None 
             
     def get_volume_root_directory(self, volume_id, session=None):
+        '''
+        Obtiene el directorio raiz de un volumen.
+        Todo volumen tiene un único directorio raiz con nombre '.' 
+        y sin diectorio padre. 
+        '''
         if (not session):
             session = self.__db_session()
              
@@ -188,6 +196,9 @@ class DataManager(object):
         return None
 
     def get_volume_directory(self, volume_id, directory_id, session=None):
+        '''
+        Obtiene un directorio de un volumen.
+        '''
         if (not session):
             session = self.__db_session()
              
@@ -200,6 +211,19 @@ class DataManager(object):
         return None
     
     def add_files_to_volume(self, volume_id, files, parent_directory_id=None):
+        '''
+        Agrega una lista de archivos a un directorio de un volumen.
+        Si no se especifica un directorio los archivos son agregados al directorio raiz del volumen.
+        
+        files = {
+            'name':unicode(name), 
+            'full_name':unicode(full_name), 
+            'name_extension_only':unicode(name_extension_only), 
+            'name_without_extension':unicode(name_without_extension), 
+            'size':size, 
+            'mtime':mtime
+            }
+        '''
         session = self.__db_session()
         
         if parent_directory_id == None:
@@ -213,8 +237,11 @@ class DataManager(object):
                 full_name = file_desc['full_name']
                 size = file_desc['size']
                 mtime = file_desc['mtime']
+                name_extension_only = file_desc['name_extension_only']
+                name_without_extension = file_desc['name_without_extension']
                 
-                new_file = VolumeFile(name, full_name, size, mtime, volume_id, parent_directory.directory_id)
+                new_file = VolumeFile(name, full_name, name_without_extension, name_extension_only, 
+                                      size, mtime, volume_id, parent_directory.directory_id)
                 session.add(new_file)
                 
             session.commit()
@@ -224,6 +251,11 @@ class DataManager(object):
             return False
 
     def add_directory_to_volume(self, volume_id, directory, parent_directory_id=None):
+        '''
+        Agrega un subdirectorio a un directorio de un volumen.
+        Si no se especifica un directorio destino el subdirectorio se crea en el directorio
+        raiz del volumen.
+        '''
         session = self.__db_session()
         
         if parent_directory_id == None:
@@ -245,6 +277,10 @@ class DataManager(object):
             return None
         
     def get_volume_content(self, volume_id, parent_directory_id=None):
+        '''
+        Obtiene el contenido de un directorio de un volumen.
+        Si no se especifica un directorio se obtiene el contenido del directorio raiz.
+        '''
         session = self.__db_session()
         
         if not parent_directory_id:
@@ -253,7 +289,9 @@ class DataManager(object):
             parent_directory = self.get_volume_directory(volume_id, parent_directory_id, session)
             
         if parent_directory:
-            directories = session.query(VolumeDirectory).filter(VolumeDirectory.parent_directory_id==parent_directory.directory_id).all()
+            directories = session.query(VolumeDirectory). \
+                filter(VolumeDirectory.parent_directory_id==parent_directory.directory_id). \
+                order_by(VolumeDirectory.name).all()
             files = parent_directory.files
         
             return (directories, files, parent_directory.parent_directory_id)

@@ -8,7 +8,9 @@ import sys
 import gtk
 
 from os import listdir
-from os.path import exists, isdir, isfile, getsize, join, getmtime
+from os.path import exists, isdir, isfile, getsize, join, getmtime, splitext
+
+from thread import start_new_thread
 
 from datetime import date
 
@@ -95,11 +97,23 @@ class AddVolume(object):
     def add_volume(self, path, label):
         new_volume_id = get_manager().get_data().add_volume(self.__catalog.catalog_id, label)
         if new_volume_id:
+            self.__window.hide()
+            
+            while gtk.events_pending():
+                gtk.main_iteration()
+            
+            print "procesando..."
             self.load_directory_content(new_volume_id, None, path, path)
+            print "listo el medio..."
+            
             self.__parent.update()
             self.__window.destroy()
+            print "cierro la ventana..."
 
     def load_directory_content(self, volume_id, parent_id, path, base_path):
+        while gtk.events_pending():
+            gtk.main_iteration()
+        
         #Leer los archivos.
         (directories, files) = self.get_directory_content(path, base_path)
 
@@ -107,6 +121,9 @@ class AddVolume(object):
         get_manager().get_data().add_files_to_volume(volume_id, files, parent_id)
         
         for directory in directories:
+            while gtk.events_pending():
+                gtk.main_iteration()
+            
             new_directory_id = get_manager().get_data().add_directory_to_volume(volume_id, directory, parent_id)
             
             directory_name = directory['name']
@@ -126,11 +143,20 @@ class AddVolume(object):
                 relative_item = full_item[len(base_path):].lstrip('/')
                 
                 if isdir(full_item):
-                    directories.append({'name':unicode(item), 'full_name':unicode(relative_item)})
+                    directories.append({'name':unicode(item), 
+                                        'full_name':unicode(relative_item)})
+                    
                 elif isfile(full_item):
                     size = getsize(full_item)
                     mod_time = date.fromtimestamp(getmtime(full_item))
-                    files.append({'name':unicode(item), 'full_name':unicode(relative_item), 'size':size, 'mtime':mod_time})
+                    (name_without_extension, name_extension_only) = splitext(item)  
+                    
+                    files.append({'name':unicode(item), 
+                                  'full_name':unicode(relative_item),
+                                  'name_extension_only':unicode(name_extension_only),
+                                  'name_without_extension':unicode(name_without_extension),
+                                  'size':size, 
+                                  'mtime':mod_time})
                     
             return (directories, files)
         else:
