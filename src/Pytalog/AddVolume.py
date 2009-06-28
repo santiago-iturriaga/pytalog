@@ -102,13 +102,10 @@ class AddVolume(object):
             while gtk.events_pending():
                 gtk.main_iteration()
             
-            print "procesando..."
             self.load_directory_content(new_volume_id, None, path, path)
-            print "listo el medio..."
             
             self.__parent.update()
             self.__window.destroy()
-            print "cierro la ventana..."
 
     def load_directory_content(self, volume_id, parent_id, path, base_path):
         while gtk.events_pending():
