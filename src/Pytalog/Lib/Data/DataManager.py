@@ -5,12 +5,14 @@ Created on Jun 11, 2009
 @author: santiago
 '''
 
+import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from Pytalog.Lib.Data import Base
-from Pytalog.Lib.Data.Entities.Catalog import Catalog
-from Pytalog.Lib.Data.Entities.Volume import Volume
+from Pytalog.Lib.Data.Entities.Catalog import *
+from Pytalog.Lib.Data.Entities.Volume import *
 
 class DataManager(object):
     '''
@@ -41,6 +43,8 @@ class DataManager(object):
     def add_catalog(self, name):
         '''
         Agrega un nuevo catalogo.
+        
+        Retorna el ID del nuevo catalogo.
         '''
         session = self.__db_session()
         new_catalog = Catalog(name)
@@ -48,7 +52,7 @@ class DataManager(object):
         session.add(new_catalog)
         session.commit()
         
-        return new_catalog
+        return new_catalog.catalog_id
     
     def del_catalog(self, id):
         '''
@@ -65,6 +69,9 @@ class DataManager(object):
         return False
     
     def ren_catalog(self, id, new_name):
+        '''
+        Renombra un catalogo.
+        '''
         session =  self.__db_session()
         catalog = self.get_catalog(id, session)
         
@@ -78,6 +85,9 @@ class DataManager(object):
         return False
     
     def get_catalog(self, id, session=None):
+        '''
+        Obtiene un catalog.
+        '''
         if (not session):
             session = self.__db_session()
         
@@ -94,11 +104,54 @@ class DataManager(object):
         '''
         return self.__db_session().query(Catalog).order_by(Catalog.name).all()
     
+    def add_volume(self, catalog_id, label):
+        '''
+        Crea un nuevo volúmen y lo agrega a un catalogo.
+        Además crea el directorio ROOT del nuevo volúmen.
+        
+        Retorna el ID del nuevo volumen.
+        '''
+        session = self.__db_session()
+        
+        new_volume = Volume(catalog_id, label, datetime.datetime.today())
+        session.add(new_volume)
+        session.commit()
+        
+        new_volume_root = VolumeDirectory(".", ".", new_volume.volume_id, None)
+        session.add(new_volume_root)
+        session.commit()
+        
+        return new_volume.volume_id
+    
     def del_volume(self, id):
-        pass
+        '''
+        Elimina un volumen.
+        '''
+        session = self.__db_session()
+        
+        volume = self.get_volume(id, session)
+        if volume:
+            session.delete(volume)
+            session.commit()
+            return True
+        else:
+            return False
     
     def ren_volume(self, id, label):
-        pass
+        '''
+        Renombra un volumen.
+        '''
+        session = self.__db_session()
+        
+        volume = self.get_volume(id, session)
+        if volume:
+            volume.label = label
+            session.add(volume)
+            session.commit()
+            
+            return True
+        else:
+            return False
     
     def get_volumes(self, catalog_id):
         '''
@@ -109,4 +162,101 @@ class DataManager(object):
         volumes = catalog.volumes
 
         return volumes
+    
+    def get_volume(self, volume_id, session=None):
+        if (not session):
+            session = self.__db_session()
+            
+        volumes = session.query(Volume).filter(Volume.volume_id == volume_id).all()
+        
+        if volumes:
+            if len(volumes) > 0:
+                return volumes[0]
+        
+        return None 
+            
+    def get_volume_root_directory(self, volume_id, session=None):
+        if (not session):
+            session = self.__db_session()
+             
+        directories = session.query(VolumeDirectory).filter(VolumeDirectory.volume_id==volume_id).filter(VolumeDirectory.parent_directory_id==None).all()
+                                                            
+        if directories:
+            if len(directories) > 0:
+                return directories[0]
+                
+        return None
+
+    def get_volume_directory(self, volume_id, directory_id, session=None):
+        if (not session):
+            session = self.__db_session()
+             
+        directories = session.query(VolumeDirectory).filter(VolumeDirectory.volume_id==volume_id).filter(VolumeDirectory.directory_id==directory_id).all()
+                                                            
+        if directories:
+            if len(directories) > 0:
+                return directories[0]
+                
+        return None
+    
+    def add_files_to_volume(self, volume_id, files, parent_directory_id=None):
+        session = self.__db_session()
+        
+        if parent_directory_id == None:
+            parent_directory = self.get_volume_root_directory(volume_id, session)
+        else:
+            parent_directory = self.get_volume_directory(volume_id, parent_directory_id, session)
+            
+        if parent_directory:
+            for file_desc in files:
+                name = file_desc['name']
+                full_name = file_desc['full_name']
+                size = file_desc['size']
+                mtime = file_desc['mtime']
+                
+                new_file = VolumeFile(name, full_name, size, mtime, volume_id, parent_directory.directory_id)
+                session.add(new_file)
+                
+            session.commit()
+            
+            return True
+        else:
+            return False
+
+    def add_directory_to_volume(self, volume_id, directory, parent_directory_id=None):
+        session = self.__db_session()
+        
+        if parent_directory_id == None:
+            parent_directory = self.get_volume_root_directory(volume_id, session)
+        else:
+            parent_directory = self.get_volume_directory(volume_id, parent_directory_id, session)
+            
+        if parent_directory:
+            name = directory['name']
+            full_name = directory['full_name']
+            
+            new_directory = VolumeDirectory(name, full_name, volume_id, parent_directory.directory_id)
+            session.add(new_directory)
+                
+            session.commit()
+            
+            return new_directory.directory_id
+        else:
+            return None
+        
+    def get_volume_content(self, volume_id, parent_directory_id=None):
+        session = self.__db_session()
+        
+        if not parent_directory_id:
+            parent_directory = self.get_volume_root_directory(volume_id, session)
+        else:
+            parent_directory = self.get_volume_directory(volume_id, parent_directory_id, session)
+            
+        if parent_directory:
+            directories = session.query(VolumeDirectory).filter(VolumeDirectory.parent_directory_id==parent_directory.directory_id).all()
+            files = parent_directory.files
+        
+            return (directories, files, parent_directory.parent_directory_id)
+        else:
+            return None
     

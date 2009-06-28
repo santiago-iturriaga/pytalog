@@ -4,77 +4,83 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Add volume to catalog</property>
+    <property name="icon_name">face-monkey</property>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkVBox" id="vbox2">
+          <object class="GtkHBox" id="hbox2">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
+            <property name="homogeneous">True</property>
             <child>
-              <object class="GtkFileChooserWidget" id="filechooserwidget1">
+              <object class="GtkComboBox" id="combobox_volume">
+                <property name="width_request">250</property>
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="model">liststore_volumes</property>
+                <signal name="changed" handler="on_combobox_volume_changed"/>
+                <child>
+                  <object class="GtkCellRendererPixbuf" id="combobox_volume_cell_icon"/>
+                  <attributes>
+                    <attribute name="stock-id">1</attribute>
+                  </attributes>
+                </child>
+                <child>
+                  <object class="GtkCellRendererText" id="combobox_volume_cell_label"/>
+                  <attributes>
+                    <attribute name="text">2</attribute>
+                  </attributes>
+                </child>
               </object>
               <packing>
+                <property name="padding">5</property>
                 <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkTable" id="table1">
-                <property name="visible">True</property>
-                <property name="n_rows">2</property>
-                <property name="n_columns">2</property>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
+            <property name="fill">False</property>
+            <property name="padding">5</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
+            <property name="homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">button</property>
+              <object class="GtkButton" id="volume_add">
+                <property name="label" translatable="yes">gtk-add</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_volume_add_clicked"/>
               </object>
               <packing>
+                <property name="padding">5</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
-                <property name="label" translatable="yes">button</property>
+              <object class="GtkButton" id="volume_cancel">
+                <property name="label" translatable="yes">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_volume_cancel_clicked"/>
               </object>
               <packing>
+                <property name="padding">5</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
+            <property name="fill">False</property>
+            <property name="padding">5</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -82,7 +88,6 @@
     </child>
   </object>
   <object class="GtkFileChooserDialog" id="filechooser">
-    <property name="visible">True</property>
     <property name="border_width">5</property>
     <property name="type_hint">normal</property>
     <property name="has_separator">False</property>
@@ -143,5 +148,33 @@
       <action-widget response="0">buttonOk</action-widget>
       <action-widget response="0">button2</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkImage" id="image_volume_custom">
+    <property name="visible">True</property>
+    <property name="stock">gtk-harddisk</property>
+  </object>
+  <object class="GtkImage" id="image_volume_media">
+    <property name="visible">True</property>
+    <property name="stock">gtk-cdrom</property>
+  </object>
+  <object class="GtkListStore" id="liststore_volumes">
+    <columns>
+      <!-- column-name dev_name -->
+      <column type="gchararray"/>
+      <!-- column-name stock_id -->
+      <column type="gchararray"/>
+      <!-- column-name label -->
+      <column type="gchararray"/>
+      <!-- column-name media -->
+      <column type="gboolean"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">custom</col>
+        <col id="1" translatable="yes">gtk-harddisk</col>
+        <col id="2" translatable="yes">Custom</col>
+        <col id="3">False</col>
+      </row>
+    </data>
   </object>
 </interface>

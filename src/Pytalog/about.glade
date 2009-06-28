@@ -8,6 +8,7 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
+    <property name="icon_name">face-monkey</property>
     <property name="type_hint">normal</property>
     <property name="has_separator">False</property>
     <property name="program_name">pytalog</property>
@@ -15,6 +16,7 @@
     <property name="website">http://ituland.com</property>
     <property name="website_label" translatable="yes">ituland</property>
     <property name="authors">Santiago Iturriaga &lt;santiago@ituland.com&gt;</property>
+    <property name="logo_icon_name">face-monkey</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox">
         <property name="visible">True</property>
