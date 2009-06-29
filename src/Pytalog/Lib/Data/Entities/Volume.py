@@ -23,7 +23,7 @@ class Volume(Base):
     created_on = Column(DateTime, nullable=False)
     
     catalog_id = Column(Integer, ForeignKey("catalogs.catalog_id"), nullable=False)
-    catalog = relation("Catalog", cascade="delete")
+    catalog = relation("Catalog")
 
     directories = relation("VolumeDirectory", cascade="delete")
     files = relation("VolumeFile", cascade="delete")

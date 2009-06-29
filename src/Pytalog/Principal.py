@@ -297,6 +297,7 @@ class CatalogTreeView(object):
         
         message = gtk.MessageDialog(self.__principalWindow, 0, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, None)
         message.set_markup("Are you sure you want to delete '{0}'?".format(name))
+        message.format_secondary_text("NOTE: deleting catalogs may take a couple of minutes.")
         result = message.run()
         
         if result == gtk.RESPONSE_OK:
