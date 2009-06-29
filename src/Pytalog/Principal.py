@@ -61,9 +61,6 @@ class Principal(object):
     
     def on_menuitemAbout_activate(self, widget, data=None):
         About().show()
-        
-    def on_menuitemOpenCatalog_activate(self, widget, data=None):
-        pass
     
     def on_menuitemNewCatalog_activate(self, widget, data=None):
         AddCatalog().show(self)

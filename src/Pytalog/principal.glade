@@ -62,15 +62,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="menuitemOpenCatalog">
-                        <property name="label" translatable="yes">Add volume to catalog</property>
-                        <property name="visible">True</property>
-                        <property name="image">image_open</property>
-                        <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_menuitemOpenCatalog_activate"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
                         <property name="visible">True</property>
                       </object>
@@ -246,10 +237,6 @@
   <object class="GtkImage" id="image_new_catalog">
     <property name="visible">True</property>
     <property name="stock">gtk-new</property>
-  </object>
-  <object class="GtkImage" id="image_open">
-    <property name="visible">True</property>
-    <property name="stock">gtk-open</property>
   </object>
   <object class="GtkImage" id="image_catalog">
     <property name="visible">True</property>
