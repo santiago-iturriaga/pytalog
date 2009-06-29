@@ -3,3 +3,6 @@ syntax: regexp
 ^src/filelisting\.py$
 syntax: regexp
 ^src/treeviewcolumn\.py$
+
+syntax: regexp
+^src/Pytalog/catalog\.db$
