@@ -3,11 +3,28 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="progress.window">
+    <property name="width_request">200</property>
+    <property name="title" translatable="yes">Processing...</property>
     <property name="resizable">False</property>
+    <property name="icon_name">face-monkey</property>
+    <property name="urgency_hint">True</property>
+    <property name="deletable">False</property>
     <child>
-      <object class="GtkProgressBar" id="progress.progressbar">
+      <object class="GtkVBox" id="progress.vbox">
         <property name="visible">True</property>
-        <property name="activity_mode">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkProgressBar" id="progress.progressbar">
+            <property name="visible">True</property>
+            <property name="activity_mode">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="padding">5</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>

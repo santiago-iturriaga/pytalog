@@ -23,10 +23,10 @@ class Volume(Base):
     created_on = Column(DateTime, nullable=False)
     
     catalog_id = Column(Integer, ForeignKey("catalogs.catalog_id"), nullable=False)
-    catalog = relation("Catalog", single_parent=True)
+    catalog = relation("Catalog", cascade="delete")
 
-    directories = relation("VolumeDirectory", cascade="all, delete")
-    files = relation("VolumeFile", cascade="all, delete")
+    directories = relation("VolumeDirectory", cascade="delete")
+    files = relation("VolumeFile", cascade="delete")
 
     def __init__(self, catalog_id, label, created_on):
         self.catalog_id = catalog_id
@@ -52,9 +52,9 @@ class VolumeDirectory(Base):
     volume = relation(Volume, single_parent=True)
     
     parent_directory_id = Column(Integer, ForeignKey('volumesdirectories.directory_id'), nullable=True)
-    parent_directory = relation('VolumeDirectory', cascade="all, delete", single_parent=True)
+    parent_directory = relation('VolumeDirectory', single_parent=True)
     
-    files = relation("VolumeFile", cascade="all, delete", order_by="VolumeFile.name")
+    files = relation("VolumeFile", order_by="VolumeFile.name")
     
     def __init__(self, name, full_name, volume_id, parent_directory_id):
         self.name = name
@@ -82,7 +82,7 @@ class VolumeFile(Base):
     modified_on = Column(DateTime, nullable=False)
     
     volume_id = Column(Integer, ForeignKey(Volume.volume_id), nullable=False)
-    volume = relation(Volume, cascade="all, delete", single_parent=True)
+    volume = relation(Volume, single_parent=True)
 
     parent_directory_id = Column(Integer, ForeignKey(VolumeDirectory.directory_id), nullable=False)
     parent_directory = relation(VolumeDirectory, single_parent=True)
