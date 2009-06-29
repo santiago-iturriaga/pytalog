@@ -99,63 +99,82 @@ class AddVolume(object):
         if new_volume_id:
             self.__window.hide()
             
+            progressBuilder = gtk.Builder()
+            progressBuilder.add_from_file("progress.glade")
+            progressWindow = progressBuilder.get_object("progress.window")
+            progress = progressBuilder.get_object("progress.progressbar")
+            progressWindow.show()
+            
             while gtk.events_pending():
                 gtk.main_iteration()
             
-            self.load_directory_content(new_volume_id, None, path, path)
-            
-            self.__parent.update()
-            self.__window.destroy()
+            try:
+                load_directory_content(progress, new_volume_id, None, path, path)
+            except e:
+                print "Error: %s" % e
+            finally:
+                progressWindow.destroy()
+                self.__parent.update()
+                self.__window.destroy()
 
-    def load_directory_content(self, volume_id, parent_id, path, base_path):
-        while gtk.events_pending():
-            gtk.main_iteration()
-        
-        #Leer los archivos.
-        (directories, files) = self.get_directory_content(path, base_path)
+'''
+Operaciones de carga de contenido.
+'''
 
-        #Agregar archivos a la DB.
-        get_manager().get_data().add_files_to_volume(volume_id, files, parent_id)
-        
-        for directory in directories:
-            while gtk.events_pending():
-                gtk.main_iteration()
-            
-            new_directory_id = get_manager().get_data().add_directory_to_volume(volume_id, directory, parent_id)
-            
-            directory_name = directory['name']
-            directory_path = join(path, directory_name)
-            
-            self.load_directory_content(volume_id, new_directory_id, directory_path, base_path)
+def load_directory_content(progress, volume_id, parent_id, path, base_path):
+    refresh_progress(progress)
     
-    def get_directory_content(self, path, base_path):
-        files = []
-        directories = []
+    #Leer los archivos.
+    (directories, files) = get_directory_content(path, base_path)
+
+    #Agregar archivos a la DB.
+    get_manager().get_data().add_files_to_volume(volume_id, files, parent_id)
+    
+    for directory in directories:
+        refresh_progress(progress, False)
         
-        if exists(path) and isdir(path):
-            content = listdir(path)
+        new_directory_id = get_manager().get_data().add_directory_to_volume(volume_id, directory, parent_id)
+        
+        directory_name = directory['name']
+        directory_path = join(path, directory_name)
+        
+        load_directory_content(progress, volume_id, new_directory_id, directory_path, base_path)
+
+def get_directory_content(path, base_path):
+    files = []
+    directories = []
+    
+    if exists(path) and isdir(path):
+        content = listdir(path)
+        
+        for item in content:
+            full_item = join(path, item)
+            relative_item = full_item[len(base_path):].lstrip('/')
             
-            for item in content:
-                full_item = join(path, item)
-                relative_item = full_item[len(base_path):].lstrip('/')
+            if isdir(full_item):
+                directories.append({'name':unicode(item), 
+                                    'full_name':unicode(relative_item)})
                 
-                if isdir(full_item):
-                    directories.append({'name':unicode(item), 
-                                        'full_name':unicode(relative_item)})
-                    
-                elif isfile(full_item):
-                    size = getsize(full_item)
-                    mod_time = date.fromtimestamp(getmtime(full_item))
-                    (name_without_extension, name_extension_only) = splitext(item)  
-                    
-                    files.append({'name':unicode(item), 
-                                  'full_name':unicode(relative_item),
-                                  'name_extension_only':unicode(name_extension_only),
-                                  'name_without_extension':unicode(name_without_extension),
-                                  'size':size, 
-                                  'mtime':mod_time})
-                    
-            return (directories, files)
-        else:
-            return None
+            elif isfile(full_item):
+                size = getsize(full_item)
+                mod_time = date.fromtimestamp(getmtime(full_item))
+                (name_without_extension, name_extension_only) = splitext(item)  
+                
+                files.append({'name':unicode(item), 
+                              'full_name':unicode(relative_item),
+                              'name_extension_only':unicode(name_extension_only),
+                              'name_without_extension':unicode(name_without_extension),
+                              'size':size, 
+                              'mtime':mod_time})
+            
+        return (directories, files)
+    else:
+        return None
+    
+def refresh_progress(progress, do_pulse=True):
+    if do_pulse:
+        progress.pulse()
+        
+    while gtk.events_pending():
+        gtk.main_iteration()
         

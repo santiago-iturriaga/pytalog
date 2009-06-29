@@ -29,7 +29,7 @@ class Principal(object):
         
         self.__principal = self.__builder.get_object(Principal.WINDOW_MAIN)
              
-        self.__tree_view = CatalogTreeView(self, self.__builder)
+        self.__tree_view = CatalogTreeView(self, self.__builder, self.__principal)
         self.__tree_view.load_catalogs()
 
         self.__list_view = CatalogListView(self, self.__builder)
@@ -197,8 +197,9 @@ class CatalogTreeView(object):
     MENU_TREE = 'menu_tree'
     MENU_TREE_ADD_VOLUME = 'menu_tree_add_volume'
     
-    def __init__(self, principal, builder):
+    def __init__(self, principal, builder, principalWindow):
         self.__principal = principal
+        self.__principalWindow = principalWindow
         self.__builder = builder
         
         imageCatalog = self.__builder.get_object(CatalogTreeView.ICON_CATALOG)
@@ -279,10 +280,7 @@ class CatalogTreeView(object):
     def on_menu_tree_rename_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
         name = self.__tree_store.get_value(iter, 1)
-        #column = self.__tree_view.get_column(0)
-        #renderer = column.get_cell_renderers()[1]
-        #self.__tree_view.grab_focus()
-        #self.__tree_view.set_cursor_on_cell(path, column, renderer, True)
+
         self.__dialog_rename = self.__builder.get_object('dialog_rename')
         self.__dialog_rename.info = (id, type, path, iter)
         self.__builder.get_object('entry_rename').set_text(name)
@@ -295,23 +293,21 @@ class CatalogTreeView(object):
     
     def on_menu_tree_delete_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
+        name = self.__tree_store.get_value(iter, 1)
         
-        if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-            if (get_manager().get_data().del_catalog(id)):
-                self.__tree_store.remove(iter)
-        else:
-            if (get_manager().get_data().del_volume(id)):
-                self.__tree_store.remove(iter)
-       
-    #def on_cellVolumesName_edited(self, widget, path, new_text, data=None):
-    #    (id, type, iter) = self.__get_item_from_path(path)
-    #    
-    #    if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-    #        if (get_manager().get_data().ren_catalog(id, new_text)):
-    #            self.__tree_store.set_value(iter, 1, new_text)
-    #    else:
-    #        if (get_manager().get_data().ren_volume(id, new_text)):
-    #            self.__tree_store.set_value(iter, 1, new_text)
+        message = gtk.MessageDialog(self.__principalWindow, 0, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, None)
+        message.set_markup("Are you sure you want to delete '{0}'?".format(name))
+        result = message.run()
+        
+        if result == gtk.RESPONSE_OK:
+            if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
+                if (get_manager().get_data().del_catalog(id)):
+                    self.__tree_store.remove(iter)
+            else:
+                if (get_manager().get_data().del_volume(id)):
+                    self.__tree_store.remove(iter)
+                    
+        message.destroy()
                 
     def on_button_rename_ok_clicked(self, widget, data=None):
         if self.__dialog_rename:

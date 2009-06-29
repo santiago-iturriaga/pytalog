@@ -21,7 +21,7 @@ class Catalog(Base):
     catalog_id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     
-    volumes = relation("Volume", cascade="all, delete")
+    volumes = relation("Volume", cascade="delete")
 
     def __init__(self, name):
         self.name = name
