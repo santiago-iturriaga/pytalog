@@ -49,6 +49,8 @@ class AddVolume(object):
         self.__filechooser = self.__builder.get_object(AddVolume.FILE_CHOOSER)
         self.__window = self.__builder.get_object(AddVolume.WINDOW)
         self.__liststore = self.__builder.get_object(AddVolume.LISTSTORE)
+        
+        self.__selected = None
 
     def show(self, parent_widget, catalog_id):
         self.__parent = parent_widget

@@ -3,17 +3,21 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <!-- interface-local-resource-path /media/Almacen/santiago/eclipse-python-workspace/pytalog/src/Pytalog -->
-  <object class="GtkWindow" id="window">
-    <property name="title" translatable="yes">Add catalog</property>
-    <property name="destroy_with_parent">True</property>
+  <object class="GtkDialog" id="window">
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Add a catalog</property>
     <property name="icon_name">face-monkey</property>
-    <child>
-      <object class="GtkVBox" id="vboxWindow">
+    <property name="type_hint">normal</property>
+    <property name="has_separator">False</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
         <child>
           <object class="GtkHBox" id="hboxData">
             <property name="visible">True</property>
+            <property name="spacing">5</property>
             <child>
               <object class="GtkLabel" id="labelName">
                 <property name="visible">True</property>
@@ -38,15 +42,14 @@
             </child>
           </object>
           <packing>
-            <property name="fill">False</property>
             <property name="padding">5</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkHBox" id="hboxButtons">
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
-            <property name="homogeneous">True</property>
+            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="buttonOk">
                 <property name="label" translatable="yes">gtk-ok</property>
@@ -57,6 +60,8 @@
                 <signal name="clicked" handler="on_buttonOk_clicked"/>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="padding">5</property>
                 <property name="position">0</property>
               </packing>
@@ -71,18 +76,24 @@
                 <signal name="clicked" handler="on_buttonCancel_clicked"/>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="padding">5</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="fill">False</property>
-            <property name="padding">5</property>
-            <property name="position">1</property>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
     </child>
+    <action-widgets>
+      <action-widget response="0">buttonOk</action-widget>
+      <action-widget response="0">buttonCancel</action-widget>
+    </action-widgets>
   </object>
 </interface>
