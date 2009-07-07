@@ -2,103 +2,6 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkWindow" id="window">
-    <property name="width_request">350</property>
-    <property name="title" translatable="yes">Add a volume to the catalog</property>
-    <property name="resizable">False</property>
-    <property name="icon_name">face-monkey</property>
-    <child>
-      <object class="GtkVBox" id="vbox1">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkHBox" id="hbox2">
-            <property name="visible">True</property>
-            <child>
-              <object class="GtkLabel" id="label_volume">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Device:</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="padding">5</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBox" id="combobox_volume">
-                <property name="width_request">250</property>
-                <property name="visible">True</property>
-                <property name="model">liststore_volumes</property>
-                <signal name="changed" handler="on_combobox_volume_changed"/>
-                <child>
-                  <object class="GtkCellRendererPixbuf" id="combobox_volume_cell_icon"/>
-                  <attributes>
-                    <attribute name="stock-id">1</attribute>
-                  </attributes>
-                </child>
-                <child>
-                  <object class="GtkCellRendererText" id="combobox_volume_cell_label"/>
-                  <attributes>
-                    <attribute name="text">2</attribute>
-                  </attributes>
-                </child>
-              </object>
-              <packing>
-                <property name="padding">5</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="fill">False</property>
-            <property name="padding">5</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkHBox" id="hbox1">
-            <property name="visible">True</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkButton" id="volume_add">
-                <property name="label" translatable="yes">gtk-add</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_volume_add_clicked"/>
-              </object>
-              <packing>
-                <property name="padding">5</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="volume_cancel">
-                <property name="label" translatable="yes">gtk-cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_volume_cancel_clicked"/>
-              </object>
-              <packing>
-                <property name="padding">5</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="fill">False</property>
-            <property name="padding">5</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
   <object class="GtkFileChooserDialog" id="filechooser">
     <property name="border_width">5</property>
     <property name="type_hint">normal</property>
@@ -188,5 +91,108 @@
         <col id="3">False</col>
       </row>
     </data>
+  </object>
+  <object class="GtkDialog" id="window">
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Add a volume to a catalog</property>
+    <property name="icon_name">face-monkey</property>
+    <property name="type_hint">normal</property>
+    <property name="has_separator">False</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox2">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child>
+          <object class="GtkHBox" id="hbox2">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkLabel" id="label_volume">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Device:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">5</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_volume">
+                <property name="width_request">250</property>
+                <property name="visible">True</property>
+                <property name="model">liststore_volumes</property>
+                <signal name="changed" handler="on_combobox_volume_changed"/>
+                <child>
+                  <object class="GtkCellRendererPixbuf" id="combobox_volume_cell_icon"/>
+                  <attributes>
+                    <attribute name="stock-id">1</attribute>
+                  </attributes>
+                </child>
+                <child>
+                  <object class="GtkCellRendererText" id="combobox_volume_cell_label"/>
+                  <attributes>
+                    <attribute name="text">2</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="padding">5</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="fill">False</property>
+            <property name="padding">5</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area2">
+            <property name="visible">True</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="volume_add">
+                <property name="label" translatable="yes">gtk-add</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_volume_add_clicked"/>
+              </object>
+              <packing>
+                <property name="padding">5</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="volume_cancel">
+                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_volume_cancel_clicked"/>
+              </object>
+              <packing>
+                <property name="padding">5</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="0">volume_add</action-widget>
+      <action-widget response="0">volume_cancel</action-widget>
+    </action-widgets>
   </object>
 </interface>
