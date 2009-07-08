@@ -252,8 +252,9 @@ class CatalogTreeView(object):
     def on_treeviewVolumes_cursor_changed(self, widget, data=None):
         treeselection = widget.get_selection()
         (model, iter) = treeselection.get_selected()
-        catalog_or_volume_id = model.get_value(iter, 0)
-        #print "Selected: <'%s'>" % (catalog_or_volume_id)
+        if iter:
+            catalog_or_volume_id = model.get_value(iter, 0)
+            #print "Selected: <'%s'>" % (catalog_or_volume_id)
           
     def on_treeviewVolumes_row_activated(self, widget, path, view_column, data=None):
         (id, type, iter) = self.__get_item_from_path(path)
