@@ -23,6 +23,8 @@ class Principal(object):
     '''
     
     WINDOW_MAIN = 'window'
+    TOOLBAR = 'toolbar_principal'
+    TOOLBAR_ADD_VOLUME = 'toolbutton_add_volume'
        
     def __init__(self):
         self.__builder = gtk.Builder()
@@ -30,6 +32,8 @@ class Principal(object):
         self.__builder.connect_signals(self)
         
         self.__principal = self.__builder.get_object(Principal.WINDOW_MAIN)
+        self.__toolbar = self.__builder.get_object(Principal.TOOLBAR)
+        self.__toolbar_add_volume = self.__builder.get_object(Principal.TOOLBAR_ADD_VOLUME)
              
         self.__tree_view = CatalogTreeView(self, self.__builder, self.__principal)
         self.__tree_view.load_catalogs()
@@ -54,6 +58,15 @@ class Principal(object):
     def load_volume(self, volume_id):
         self.__list_view.load_volume(volume_id)
 
+    def add_catalog(self):
+        AddCatalog().show(self)
+        
+    def add_volume(self, catalog_id):
+        AddVolume().show(self, catalog_id)
+        
+    def catalog_selected(self, is_catalog_selected):
+        self.__toolbar_add_volume.set_sensitive(is_catalog_selected)
+
     '''
     Signals del menu principal.
     '''
@@ -65,8 +78,21 @@ class Principal(object):
         About().show()
     
     def on_menuitemNewCatalog_activate(self, widget, data=None):
-        AddCatalog().show(self)
-    
+        self.add_catalog()        
+        
+    '''
+    Signals del toolbar
+    '''
+
+    def on_toolbutton_new_catalog_clicked(self, widget, data=None):
+        self.add_catalog()
+        
+    def on_toolbutton_add_volume_clicked(self, widget, data=None):
+        selected = self.__tree_view.get_selected_item()
+        if selected:
+            (id, type) = selected
+            self.add_volume(id)
+        
     '''
     Signals del treeview.
     '''
@@ -238,6 +264,17 @@ class CatalogTreeView(object):
             for volume in volumes:
                 self.__tree_store.append(iter, [volume.volume_id, volume.label, self.__imageVolumeStock, CatalogTreeView.ITEM_TYPE_VOLUME, True] )
 
+    def get_selected_item(self):
+        treeselection = self.__tree_view.get_selection()
+        (model, iter) = treeselection.get_selected()
+        if iter:
+            catalog_or_volume_id = model.get_value(iter, 0)
+            type = self.__tree_store.get_value(iter, 3)
+            
+            return (catalog_or_volume_id, type)
+        else:
+            return None
+
     def __get_item_from_path(self, path):
         '''
         Dado un path de un item en el treeview retorna una tupla con (id, type, iter).
@@ -250,11 +287,16 @@ class CatalogTreeView(object):
         return (id, type, iter)
 
     def on_treeviewVolumes_cursor_changed(self, widget, data=None):
-        treeselection = widget.get_selection()
-        (model, iter) = treeselection.get_selected()
-        if iter:
-            catalog_or_volume_id = model.get_value(iter, 0)
-            #print "Selected: <'%s'>" % (catalog_or_volume_id)
+        selected = self.get_selected_item()
+        if selected:
+            (catalog_or_volume_id, type) = selected
+            
+            if type == CatalogTreeView.ITEM_TYPE_CATALOG:
+                self.__principal.catalog_selected(True)
+            else:
+                self.__principal.catalog_selected(False)                
+        else:
+            self.__principal.catalog_selected(False)
           
     def on_treeviewVolumes_row_activated(self, widget, path, view_column, data=None):
         (id, type, iter) = self.__get_item_from_path(path)
@@ -290,7 +332,7 @@ class CatalogTreeView(object):
 
     def on_menu_tree_add_volume_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
-        AddVolume().show(self.__principal, id)
+        self.__principal.add_volume(id)
     
     def on_menu_tree_rename_activate(self, widget, data=None):
         (id, type, iter, path) = self.__menu_tree.current_item
