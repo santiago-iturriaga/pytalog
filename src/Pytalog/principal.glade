@@ -109,7 +109,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="toolbar1">
+          <object class="GtkToolbar" id="toolbar_principal">
             <property name="visible">True</property>
             <property name="toolbar_style">both</property>
             <child>
@@ -118,6 +118,7 @@
                 <property name="label" translatable="yes">New catalog</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-harddisk</property>
+                <signal name="clicked" handler="on_toolbutton_new_catalog_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -127,9 +128,11 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_add_volume">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="label" translatable="yes">Add volume</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-cdrom</property>
+                <signal name="clicked" handler="on_toolbutton_add_volume_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
