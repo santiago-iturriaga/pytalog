@@ -12,7 +12,7 @@ from os.path import exists, isdir, isfile, getsize, join, getmtime, splitext
 
 from thread import start_new_thread
 
-from datetime import date
+from datetime import date, datetime
 
 from Pytalog.Lib import get_manager
 
@@ -159,7 +159,7 @@ def get_directory_content(path, base_path):
                 
             elif isfile(full_item):
                 size = getsize(full_item)
-                mod_time = date.fromtimestamp(getmtime(full_item))
+                mod_time = datetime.fromtimestamp(getmtime(full_item))
                 (name_without_extension, name_extension_only) = splitext(item)  
                 
                 files.append({'name':unicode(item), 
