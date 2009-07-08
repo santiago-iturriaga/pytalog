@@ -15,6 +15,8 @@ from Pytalog.AddVolume import AddVolume
 
 from Pytalog.Lib import get_manager
 
+from Pytalog.Humanize import HumanizeSize
+
 class Principal(object):
     '''
     Code-behind de la ventana principal.
@@ -88,7 +90,10 @@ class Principal(object):
         self.__tree_view.on_menu_tree_rename_activate(widget, data)
     
     def on_menu_tree_delete_activate(self, widget, data=None):
-        self.__tree_view.on_menu_tree_delete_activate(widget, data)
+        result = self.__tree_view.on_menu_tree_delete_activate(widget, data)
+        if result:
+            (id, type) = result
+            self.__list_view.tree_item_removed(id, type)
        
     def on_cellVolumesName_edited(self, widget, path, new_text, data=None):
         self.__tree_view.on_cellVolumesName_edited(widget, path, new_text, data)
@@ -133,26 +138,29 @@ class CatalogListView(object):
         self.__tree_view = self.__builder.get_object(CatalogListView.TREE_VIEW)
         self.__list_store = self.__builder.get_object(CatalogListView.LIST_MODEL)
    
+        self.__volume = None    
+   
     def load_volume(self, volume_id):
-        self.__volume_id = volume_id
+        self.__volume = get_manager().get_data().get_volume(volume_id)
         self.load_volume_directory(None)
 
     def load_volume_directory(self, directory_id):
         self.unload_directory()
         
-        (directories, files, parent_id) = get_manager().get_data().get_volume_content(self.__volume_id, directory_id)
+        (directories, files, parent_id) = get_manager().get_data().get_volume_content(self.__volume.volume_id, directory_id)
 
         if parent_id:
-            self.__list_store.append([parent_id, '..', CatalogListView.ITEM_TYPE_PARENT, self.__imageDirectoryStock, ''])
+            self.__list_store.append([parent_id, '..', CatalogListView.ITEM_TYPE_PARENT, self.__imageDirectoryStock, '', ''])
         
         for directory in directories:
-            self.__list_store.append([directory.directory_id, directory.name, CatalogListView.ITEM_TYPE_DIRECTORY, self.__imageDirectoryStock, ''])
+            self.__list_store.append([directory.directory_id, directory.name, CatalogListView.ITEM_TYPE_DIRECTORY, self.__imageDirectoryStock, '', ''])
 
         for file in files:
-            self.__list_store.append([file.file_id, file.name, CatalogListView.ITEM_TYPE_FILE, self.__imageFileStock, file.size])
+            self.__list_store.append([file.file_id, file.name, CatalogListView.ITEM_TYPE_FILE, self.__imageFileStock, HumanizeSize(file.size), file.modified_on])
  
     def unload_volume(self):
-        self.__volume_id = None
+        self.__volume = None
+        self.unload_directory()
 
     def unload_directory(self):
         self.__list_store.clear()
@@ -175,7 +183,16 @@ class CatalogListView(object):
             self.load_volume_directory(id)
         elif (type == CatalogListView.ITEM_TYPE_PARENT):
             self.load_volume_directory(id)
-    
+            
+    def tree_item_removed(self, id, tree_type):
+        if self.__volume:
+            if tree_type == CatalogTreeView.ITEM_TYPE_CATALOG:
+                if self.__volume.catalog_id == id:
+                    self.unload_volume()
+            elif tree_type == CatalogTreeView.ITEM_TYPE_VOLUME:
+                if self.__volume.volume_id == id:
+                    self.unload_volume()
+                
 class CatalogTreeView(object):
     '''
     Clase encargada del comportamiento del treeview 
@@ -304,8 +321,13 @@ class CatalogTreeView(object):
             else:
                 if (get_manager().get_data().del_volume(id)):
                     self.__tree_store.remove(iter)
-                    
-        message.destroy()
+            
+            message.destroy()        
+            return (id, type)
+        else:
+            message.destroy()
+            return None
+        
                 
     def on_button_rename_ok_clicked(self, widget, data=None):
         if self.__dialog_rename:
