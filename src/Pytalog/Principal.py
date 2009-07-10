@@ -12,9 +12,9 @@ import gtk
 from Pytalog.About import About
 from Pytalog.AddCatalog import AddCatalog
 from Pytalog.AddVolume import AddVolume
+from Pytalog.Find import Find
 
 from Pytalog.Lib import get_manager
-
 from Pytalog.Humanize import HumanizeSize
 
 class Principal(object):
@@ -92,6 +92,10 @@ class Principal(object):
         if selected:
             (id, type) = selected
             self.add_volume(id)
+            
+    def on_toolbutton_find_clicked(self, windget, data=None):
+        find = Find(self)
+        find.show()
         
     '''
     Signals del treeview.
