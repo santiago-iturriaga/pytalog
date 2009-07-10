@@ -154,6 +154,7 @@
                 <property name="label" translatable="yes">Find</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-find</property>
+                <signal name="clicked" handler="on_toolbutton_find_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -230,12 +231,16 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="model">listFiles</property>
-                    <property name="headers_clickable">False</property>
+                    <property name="reorderable">True</property>
+                    <property name="rules_hint">True</property>
                     <property name="search_column">0</property>
                     <signal name="row_activated" handler="on_treeviewFiles_row_activated"/>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_name">
+                        <property name="resizable">True</property>
                         <property name="title">Name</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
                         <child>
                           <object class="GtkCellRendererPixbuf" id="treeviewFiles_cell_icon"/>
                           <attributes>
@@ -252,7 +257,10 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_size">
+                        <property name="resizable">True</property>
                         <property name="title">Size</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
                         <child>
                           <object class="GtkCellRendererText" id="treeviewFiles_cell_size"/>
                           <attributes>
@@ -263,7 +271,10 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_mtime">
+                        <property name="resizable">True</property>
                         <property name="title">Modification time</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
                         <child>
                           <object class="GtkCellRendererText" id="treeviewFiles_cell_mtime"/>
                           <attributes>
