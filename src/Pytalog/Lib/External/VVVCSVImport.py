@@ -12,3 +12,5 @@ class VVVCSVImport(object):
     def __init__(self):
         pass
         
+    def description(self):
+        return "VVV CSV file"
