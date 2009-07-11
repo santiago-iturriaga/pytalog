@@ -11,7 +11,6 @@ class Import(object):
     Import window code-behind
     '''
 
-
     def __init__(self, principal):
         self.__principal = principal
         
@@ -21,9 +20,17 @@ class Import(object):
         
         self.__assistant = self.__builder.get_object("assistant")        
         #self.__assistant.set_forward_page_func(self.page_func)
-        
+
+        self.__combo_intro_type = self.__builder.get_object("liststore_source_type")
+                 
     def show(self):
         self.__assistant.show()
+        
+    def 
+        
+    '''
+    Assistant signals
+    '''
         
     def on_assistant_apply(self, widget, data=None):
         print "on_assistant_apply"
