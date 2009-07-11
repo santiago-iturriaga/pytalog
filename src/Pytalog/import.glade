@@ -9,83 +9,120 @@
     <signal name="cancel" handler="on_assistant_cancel"/>
     <signal name="close" handler="on_assistant_close"/>
     <child>
-      <object class="GtkTable" id="tableIntro">
+      <object class="GtkVBox" id="vbox_intro">
+        <property name="width_request">350</property>
+        <property name="height_request">150</property>
         <property name="visible">True</property>
-        <property name="n_rows">3</property>
-        <property name="n_columns">2</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
         <child>
-          <object class="GtkLabel" id="labelSourceType">
+          <object class="GtkTable" id="table_intro">
             <property name="visible">True</property>
-            <property name="xalign">0</property>
-            <property name="label" translatable="yes">Select source type:</property>
+            <property name="n_rows">2</property>
+            <property name="n_columns">2</property>
+            <property name="column_spacing">5</property>
+            <property name="row_spacing">5</property>
+            <child>
+              <object class="GtkLabel" id="label_src_type">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Select source type:</property>
+              </object>
+              <packing>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_src_type">
+                <property name="visible">True</property>
+                <property name="model">liststore_source_type</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_src_location">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Select source location:</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserButton" id="filechooserbutton_src_location">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
-            <property name="x_padding">5</property>
-            <property name="y_padding">5</property>
+            <property name="expand">False</property>
+            <property name="padding">5</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkComboBox" id="comboboxSourceType">
+          <object class="GtkLabel" id="label_intro_text">
             <property name="visible">True</property>
-            <property name="model">liststoreSourceType</property>
+            <property name="label" translatable="yes">Please select an external file to import.</property>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
+            <property name="padding">5</property>
+            <property name="position">1</property>
           </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="labelSourceLocation">
-            <property name="visible">True</property>
-            <property name="xalign">0</property>
-            <property name="label" translatable="yes">Select source location:</property>
-          </object>
-          <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
-            <property name="x_padding">5</property>
-            <property name="y_padding">5</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkFileChooserButton" id="filechooserbuttonSourceLocation">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
       <packing>
         <property name="page_type">intro</property>
-        <property name="title">Select external source</property>
+        <property name="title">External source</property>
       </packing>
     </child>
     <child>
-      <object class="GtkTable" id="tableProgress">
+      <object class="GtkLabel" id="label_config">
         <property name="visible">True</property>
-        <property name="n_rows">2</property>
+        <property name="label" translatable="yes">No configuration is needed.</property>
+      </object>
+      <packing>
+        <property name="page_type">summary</property>
+        <property name="title">Summary</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="vbox_progress">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
         <child>
-          <object class="GtkLabel" id="label2">
+          <object class="GtkProgressBar" id="progressbar">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">Content page</property>
+            <property name="show_text">True</property>
+            <property name="text" translatable="yes">Importing...</property>
           </object>
-        </child>
-        <child>
-          <placeholder/>
+          <packing>
+            <property name="padding">5</property>
+            <property name="position">0</property>
+          </packing>
         </child>
       </object>
       <packing>
@@ -94,9 +131,9 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="label3">
+      <object class="GtkLabel" id="label_summary">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Confirmation page</property>
+        <property name="label" translatable="yes">Operation ready.</property>
       </object>
       <packing>
         <property name="page_type">summary</property>
@@ -104,7 +141,7 @@
       </packing>
     </child>
   </object>
-  <object class="GtkListStore" id="liststoreSourceType">
+  <object class="GtkListStore" id="liststore_source_type">
     <columns>
       <!-- column-name type -->
       <column type="gint"/>
