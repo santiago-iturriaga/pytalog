@@ -4,13 +4,13 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkAssistant" id="assistant">
     <property name="title" translatable="yes">Import</property>
+    <property name="icon_name">face-monkey</property>
     <signal name="apply" handler="on_assistant_apply"/>
     <signal name="prepare" handler="on_assistant_prepare"/>
     <signal name="cancel" handler="on_assistant_cancel"/>
     <signal name="close" handler="on_assistant_close"/>
     <child>
       <object class="GtkVBox" id="vbox_intro">
-        <property name="width_request">350</property>
         <property name="height_request">150</property>
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
@@ -39,6 +39,13 @@
               <object class="GtkComboBox" id="combobox_src_type">
                 <property name="visible">True</property>
                 <property name="model">liststore_source_type</property>
+                <signal name="changed" handler="on_combobox_src_type_changed"/>
+                <child>
+                  <object class="GtkCellRendererText" id="cell_src_type"/>
+                  <attributes>
+                    <attribute name="text">1</attribute>
+                  </attributes>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -65,6 +72,7 @@
             <child>
               <object class="GtkFileChooserButton" id="filechooserbutton_src_location">
                 <property name="visible">True</property>
+                <signal name="file_set" handler="on_filechooserbutton_src_location_file_set"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -104,8 +112,8 @@
         <property name="label" translatable="yes">No configuration is needed.</property>
       </object>
       <packing>
-        <property name="page_type">summary</property>
-        <property name="title">Summary</property>
+        <property name="page_type">intro</property>
+        <property name="title">Configuration</property>
       </packing>
     </child>
     <child>
@@ -120,8 +128,18 @@
             <property name="text" translatable="yes">Importing...</property>
           </object>
           <packing>
+            <property name="expand">False</property>
             <property name="padding">5</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelprogress">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">...action...</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
