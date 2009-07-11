@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkAssistant" id="assistant">
+    <property name="title" translatable="yes">Import</property>
+    <signal name="apply" handler="on_assistant_apply"/>
+    <signal name="prepare" handler="on_assistant_prepare"/>
+    <signal name="cancel" handler="on_assistant_cancel"/>
+    <signal name="close" handler="on_assistant_close"/>
+    <child>
+      <object class="GtkTable" id="tableIntro">
+        <property name="visible">True</property>
+        <property name="n_rows">3</property>
+        <property name="n_columns">2</property>
+        <child>
+          <object class="GtkLabel" id="labelSourceType">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Select source type:</property>
+          </object>
+          <packing>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
+            <property name="x_padding">5</property>
+            <property name="y_padding">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBox" id="comboboxSourceType">
+            <property name="visible">True</property>
+            <property name="model">liststoreSourceType</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelSourceLocation">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Select source location:</property>
+          </object>
+          <packing>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
+            <property name="x_padding">5</property>
+            <property name="y_padding">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFileChooserButton" id="filechooserbuttonSourceLocation">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="page_type">intro</property>
+        <property name="title">Select external source</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkTable" id="tableProgress">
+        <property name="visible">True</property>
+        <property name="n_rows">2</property>
+        <child>
+          <object class="GtkLabel" id="label2">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Content page</property>
+          </object>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="page_type">progress</property>
+        <property name="title">Importing</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label3">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Confirmation page</property>
+      </object>
+      <packing>
+        <property name="page_type">summary</property>
+        <property name="title">Summary</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkListStore" id="liststoreSourceType">
+    <columns>
+      <!-- column-name type -->
+      <column type="gint"/>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+</interface>

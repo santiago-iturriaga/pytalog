@@ -56,7 +56,7 @@
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menuitemNewCatalog">
-                        <property name="label" translatable="yes">New catalog</property>
+                        <property name="label" translatable="yes">New catalog...</property>
                         <property name="visible">True</property>
                         <property name="image">image_new_catalog</property>
                         <property name="use_stock">False</property>
@@ -69,12 +69,45 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menuitemImport">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Import...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menuitemImport_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="menuitemQuit">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_menuitemQuit_activate"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitemEdit">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemFind">
+                        <property name="label" translatable="yes">Find...</property>
+                        <property name="visible">True</property>
+                        <property name="image">image1</property>
+                        <property name="use_stock">False</property>
                       </object>
                     </child>
                   </object>
@@ -449,5 +482,9 @@
       <action-widget response="0">button_rename_ok</action-widget>
       <action-widget response="0">button_rename_cancel</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="stock">gtk-find</property>
   </object>
 </interface>

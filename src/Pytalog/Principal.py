@@ -13,6 +13,7 @@ from Pytalog.About import About
 from Pytalog.AddCatalog import AddCatalog
 from Pytalog.AddVolume import AddVolume
 from Pytalog.Find import Find
+from Pytalog.Import import Import
 
 from Pytalog.Lib import get_manager
 from Pytalog.Humanize import HumanizeSize
@@ -79,6 +80,10 @@ class Principal(object):
     
     def on_menuitemNewCatalog_activate(self, widget, data=None):
         self.add_catalog()        
+        
+    def on_menuitemImport_activate(self, widget, data=None):
+        import_window = Import(self)
+        import_window.show()
         
     '''
     Signals del toolbar
