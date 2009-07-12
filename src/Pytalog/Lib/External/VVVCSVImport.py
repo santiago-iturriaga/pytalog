@@ -84,6 +84,8 @@ class VVVCSVImport(object):
             if not directory_id:
                 directory_id = self.create_path(simple_cache, clean_path)
             
+            
+            
             line+=1
             yield True
             
