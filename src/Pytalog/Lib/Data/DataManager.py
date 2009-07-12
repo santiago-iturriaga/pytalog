@@ -13,6 +13,8 @@ from sqlalchemy.orm import sessionmaker
 from Pytalog.Lib.Data import Base
 from Pytalog.Lib.Data.Entities.Catalog import *
 from Pytalog.Lib.Data.Entities.Volume import *
+from Pytalog.Lib.Data import Errors
+
 
 class DataManager(object):
     '''
@@ -113,6 +115,9 @@ class DataManager(object):
         '''
         session = self.__db_session()
         
+        if self.get_volume_from_catalog_by_label(catalog_id, label, session):
+            raise Errors.DuplicateNameError()
+        
         new_volume = Volume(catalog_id, label, datetime.datetime.today())
         session.add(new_volume)
         session.commit()
@@ -142,6 +147,9 @@ class DataManager(object):
         Renombra un volumen.
         '''
         session = self.__db_session()
+        
+        if self.get_volume_from_catalog_by_label(catalog_id, label, session):
+            raise Errors.DuplicateNameError()
         
         volume = self.get_volume(id, session)
         if volume:
@@ -178,10 +186,13 @@ class DataManager(object):
         
         return None 
             
-    def get_volume_from_catalog_by_label(self, catalog_id, label):
+    def get_volume_from_catalog_by_label(self, catalog_id, label, session=None):
         '''
         Obtiene un volumen por su nombre exacto.
         '''
+
+        if (not session):
+            session = self.__db_session()
         
         session = self.__db_session()
         volumes = session.query(Volume).filter(Volume.catalog_id == catalog_id).filter(Volume.label == label).all()
