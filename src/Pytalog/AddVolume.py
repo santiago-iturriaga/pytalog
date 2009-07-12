@@ -9,12 +9,12 @@ import gtk
 
 from os import listdir
 from os.path import exists, isdir, isfile, getsize, join, getmtime, splitext
-
 from thread import start_new_thread
-
 from datetime import date, datetime
 
 from Pytalog.Lib import get_manager
+from Pytalog import Humanize
+from Pytalog import Dialogs
 
 if sys.platform == 'win32':
     import Pytalog.Platform.Windows as sysinfo
@@ -112,8 +112,8 @@ class AddVolume(object):
             
             try:
                 load_directory_content(progress, new_volume_id, None, path, path)
-            except e:
-                print "Error: %s" % e
+            except Exception as e:
+                Dialogs.ShowCurrentError(self.__window)
             finally:
                 progressWindow.destroy()
                 self.__parent.update()
@@ -164,7 +164,7 @@ def get_directory_content(path, base_path):
                 
                 files.append({'name':unicode(item), 
                               'full_name':unicode(relative_item),
-                              'name_extension_only':unicode(name_extension_only),
+                              'name_extension_only':unicode(name_extension_only.strip().lower()),
                               'name_without_extension':unicode(name_without_extension),
                               'size':size, 
                               'mtime':mod_time})

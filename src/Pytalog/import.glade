@@ -172,7 +172,6 @@
         <child>
           <object class="GtkLabel" id="labelprogress">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">...action...</property>
           </object>
           <packing>
             <property name="position">1</property>

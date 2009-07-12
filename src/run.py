@@ -15,6 +15,7 @@ sys.path.append(current_path)
 os.chdir(os.path.join(current_path, "Pytalog"))
 
 from Pytalog.Principal import Principal
+from Pytalog import Humanize 
 
 if __name__ == '__main__':   
     principal = Principal()
