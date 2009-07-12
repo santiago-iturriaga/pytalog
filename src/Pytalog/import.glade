@@ -18,7 +18,7 @@
         <child>
           <object class="GtkTable" id="table_intro">
             <property name="visible">True</property>
-            <property name="n_rows">2</property>
+            <property name="n_rows">3</property>
             <property name="n_columns">2</property>
             <property name="column_spacing">5</property>
             <property name="row_spacing">5</property>
@@ -38,7 +38,7 @@
             <child>
               <object class="GtkComboBox" id="combobox_src_type">
                 <property name="visible">True</property>
-                <property name="model">liststore_source_type</property>
+                <property name="model">liststore_src_type</property>
                 <signal name="changed" handler="on_combobox_src_type_changed"/>
                 <child>
                   <object class="GtkCellRendererText" id="cell_src_type"/>
@@ -79,6 +79,42 @@
                 <property name="right_attach">2</property>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_catalog_dest">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Select the destination catalog:</property>
+              </object>
+              <packing>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+                <property name="x_padding">5</property>
+                <property name="y_padding">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="combobox_catalog_dest">
+                <property name="visible">True</property>
+                <property name="model">liststore_catalog_dest</property>
+                <signal name="changed" handler="on_combobox_src_catalog_dest_changed"/>
+                <child>
+                  <object class="GtkCellRendererText" id="cell_catalog_dest"/>
+                  <attributes>
+                    <attribute name="text">1</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
                 <property name="x_padding">5</property>
                 <property name="y_padding">5</property>
               </packing>
@@ -159,11 +195,19 @@
       </packing>
     </child>
   </object>
-  <object class="GtkListStore" id="liststore_source_type">
+  <object class="GtkListStore" id="liststore_src_type">
     <columns>
       <!-- column-name type -->
       <column type="gint"/>
       <!-- column-name description -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_catalog_dest">
+    <columns>
+      <!-- column-name id -->
+      <column type="gint"/>
+      <!-- column-name name -->
       <column type="gchararray"/>
     </columns>
   </object>
