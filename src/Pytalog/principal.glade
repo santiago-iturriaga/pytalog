@@ -182,6 +182,19 @@
               </packing>
             </child>
             <child>
+              <object class="GtkToolButton" id="toolbutton_refresh">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Refresh</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-refresh</property>
+                <signal name="clicked" handler="on_toolbutton_refresh_clicked"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkToolButton" id="toolbutton_find">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Find</property>

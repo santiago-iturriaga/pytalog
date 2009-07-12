@@ -7,6 +7,7 @@ Created on Jul 11, 2009
 
 import csv
 from os import path
+import datetime
 
 from Pytalog.Lib import get_manager
 
@@ -54,7 +55,7 @@ class VVVCSVImport(object):
             raw_volume_label = row[0]
             raw_path = row[1]
             raw_name = row[2]
-            raw_size = int(row[3])
+            raw_size = row[3]
             raw_ext = row[4]
             raw_date = row[5]
 
@@ -63,6 +64,7 @@ class VVVCSVImport(object):
             
             status_callback(len(created_volumes) %100, "Reading {0}".format(clean_volume_label), len(created_volumes), False)
 
+            # Obtengo o creo el volumen
             volume_id = created_volumes.get(clean_volume_label)           
             if not volume_id:
                 volume = get_manager().get_data().get_volume_from_catalog_by_label(catalog_id, clean_volume_label)
@@ -80,11 +82,34 @@ class VVVCSVImport(object):
             if simple_cache.volume_id != volume_id:
                 simple_cache = VolumeCache(volume_id)
                 
+            # Obtengo o creo el directorio
             directory_id = simple_cache.get_path_id(clean_path)
             if not directory_id:
                 directory_id = self.create_path(simple_cache, clean_path)
             
+            # Creo el archivo
+            clean_name = unicode(raw_name.strip())
+            clean_size = long(raw_size.strip())
+            clean_ext = ".{0}".format(raw_ext.strip().lower())
             
+            #08/26/2005 08:45:14 AM
+            #mm/dd/yyyy hh:mm:ss AM
+            clean_date = datetime.datetime.strptime(raw_date, "%m/%d/%Y %I:%M:%S %p")             
+            
+            (split_name_without_ext, split_ext) = path.splitext(clean_name)
+            clean_name_without_ext = split_name_without_ext.strip()
+            
+            clean_full_name = path.join(clean_path, clean_name)           
+            
+            file = {
+                    'name':clean_name, 
+                    'full_name':clean_full_name,
+                    'name_extension_only':clean_ext,
+                    'name_without_extension':clean_name_without_ext,
+                    'size':clean_size, 
+                    'mtime':clean_date }
+            
+            get_manager().get_data().add_files_to_volume(volume_id, [file], directory_id)
             
             line+=1
             yield True

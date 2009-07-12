@@ -6,10 +6,10 @@ Created on Jul 10, 2009
 '''
 
 import sys, gtk, gobject
-from functools import partial
 
-from Pytalog.Lib.External.VVVCSVImport import VVVCSVImport 
+from Pytalog import Humanize, Dialogs
 from Pytalog.Lib import get_manager
+from Pytalog.Lib.External.VVVCSVImport import VVVCSVImport 
 
 class Import(object):
     '''
@@ -47,6 +47,8 @@ class Import(object):
 
         self.__progress_bar = self.__builder.get_object("progressbar")
         self.__progress_label = self.__builder.get_object("labelprogress")
+        
+        self.__operation_summary = ""
                  
     def show(self):
         self.__assistant.show()
@@ -71,18 +73,22 @@ class Import(object):
         
     def do_import_callback(self, current_progress, text, total, error):
         if error:
-            self.__progress_label.set_text(text)
+            self.__operation_summary = "Operation aborted with an error."
+            
+            Dialogs.ShowErrorMessage(self.__assistant, text)
             
             progress = self.__assistant.get_nth_page(Import.PROGRESS_PAGE)
             self.__assistant.set_page_complete(progress, True)   
         else:
             self.__progress_bar.set_fraction(current_progress/100.0)
-            self.__progress_bar.set_text(str(total))
+            self.__progress_bar.set_text("{0} volumes imported...".format(total))
             self.__progress_label.set_text(text)
             
             if current_progress == 100:
+                self.__operation_summary = "Operation ended successfully."
                 progress = self.__assistant.get_nth_page(Import.PROGRESS_PAGE)
-                self.__assistant.set_page_complete(progress, True)        
+                self.__assistant.set_page_complete(progress, True)
+                self.__principal.update()        
        
     def close(self):
         #self.__assistant.set_forward_page_func(None)

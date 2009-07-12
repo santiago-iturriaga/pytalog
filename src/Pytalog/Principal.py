@@ -98,9 +98,12 @@ class Principal(object):
             (id, type) = selected
             self.add_volume(id)
             
-    def on_toolbutton_find_clicked(self, windget, data=None):
+    def on_toolbutton_find_clicked(self, widget, data=None):
         find = Find(self)
         find.show()
+       
+    def on_toolbutton_refresh_clicked(self, widget, data=None):
+        self.update()
         
     '''
     Signals del treeview.
