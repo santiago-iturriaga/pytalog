@@ -15,6 +15,7 @@ from datetime import date, datetime
 from Pytalog.Lib import get_manager
 from Pytalog import Humanize
 from Pytalog import Dialogs
+from Pytalog.Lib.Data import Errors
 
 if sys.platform == 'win32':
     import Pytalog.Platform.Windows as sysinfo
@@ -73,18 +74,21 @@ class AddVolume(object):
         self.__window.destroy()
    
     def on_volume_add_clicked(self, widget, data=None):
-       if self.__selected:
-           (dev_name, label, is_media) = self.__selected
-           
-           if is_media:
-               def filter_dev_name(x): return x.dev_name == dev_name
-               result_selected = filter(filter_dev_name, self.__drives)
+        try:
+            if self.__selected:
+                (dev_name, label, is_media) = self.__selected
+                
+                if is_media:
+                    def filter_dev_name(x): return x.dev_name == dev_name
+                    result_selected = filter(filter_dev_name, self.__drives)
                
-               if result_selected:
-                   if len(result_selected) > 0:
-                       self.add_volume(result_selected[0].mount_path, result_selected[0].label)
-           else:
-               pass
+                    if result_selected:
+                        if len(result_selected) > 0:
+                            self.add_volume(result_selected[0].mount_path, result_selected[0].label)
+        except Errors.DuplicateNameError:
+            Dialogs.ShowErrorMessage(self.__window, "A volume with that name already exists. You cannot have two volumes with the same name.")
+        except:
+            Dialogs.ShowCurrentError(self.__window)
    
     def on_combobox_volume_changed(self, widget, data=None):
         index = widget.get_active()

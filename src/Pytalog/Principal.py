@@ -9,6 +9,8 @@ Created on Jun 5, 2009
 import sys
 import gtk
 
+from Pytalog import Dialogs
+
 from Pytalog.About import About
 from Pytalog.AddCatalog import AddCatalog
 from Pytalog.AddVolume import AddVolume
@@ -55,6 +57,7 @@ class Principal(object):
         
         self.__list_view.unload_volume()
         self.__tree_view.load_catalogs()
+        self.catalog_selected(False)
 
     def load_volume(self, volume_id):
         self.__list_view.load_volume(volume_id)
@@ -364,25 +367,25 @@ class CatalogTreeView(object):
         (id, type, iter, path) = self.__menu_tree.current_item
         name = self.__tree_store.get_value(iter, 1)
         
-        message = gtk.MessageDialog(self.__principalWindow, 0, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, None)
-        message.set_markup("Are you sure you want to delete '{0}'?".format(name))
-        message.format_secondary_text("NOTE: deleting catalogs may take a couple of minutes.")
-        result = message.run()
+        result = Dialogs.ShowQuestionMessage(self.__principalWindow, 
+                                            "Are you sure you want to delete '{0}'?".format(name), 
+                                            "NOTE: deleting catalogs may take a couple of minutes.")
         
-        if result == gtk.RESPONSE_OK:
+        if result == gtk.RESPONSE_YES:
             if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
                 if (get_manager().get_data().del_catalog(id)):
                     self.__tree_store.remove(iter)
+                    
+                    # El catalog seleccionado acaba de ser borrado, asi
+                    # que apago el boton de Add Volume
+                    self.__principal.catalog_selected(False)
             else:
                 if (get_manager().get_data().del_volume(id)):
                     self.__tree_store.remove(iter)
-            
-            message.destroy()        
+
             return (id, type)
         else:
-            message.destroy()
-            return None
-        
+            return None      
                 
     def on_button_rename_ok_clicked(self, widget, data=None):
         if self.__dialog_rename:
