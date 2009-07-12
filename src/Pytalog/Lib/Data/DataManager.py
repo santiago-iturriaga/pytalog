@@ -178,6 +178,18 @@ class DataManager(object):
         
         return None 
             
+    def get_volume_from_catalog_by_label(self, catalog_id, label):
+        '''
+        Obtiene un volumen por su nombre exacto.
+        '''
+        
+        session = self.__db_session()
+        volumes = session.query(Volume).filter(Volume.catalog_id == catalog_id).filter(Volume.label == label).all()
+        
+        if volumes:
+            if len(volumes) > 0:
+                return volumes[0]
+            
     def get_volume_root_directory(self, volume_id, session=None):
         '''
         Obtiene el directorio raiz de un volumen.
