@@ -41,6 +41,13 @@ class DataManager(object):
         En caso de no estarlo las entidades que faltan son creadas.
         '''
         Base.metadata.create_all(self.__db_engine)
+
+    def get_session(self):
+        return self.__db_session()
+    
+class CatalogManager(object):
+    def __init__(self, data_manager):
+        self.__data_manager = data_manager
     
     def add_catalog(self, name):
         '''
@@ -48,7 +55,7 @@ class DataManager(object):
         
         Retorna el ID del nuevo catalogo.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         new_catalog = Catalog(name)
         
         session.add(new_catalog)
@@ -60,7 +67,7 @@ class DataManager(object):
         '''
         Elimina un catalogo.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         catalog = self.get_catalog(id, session)
         
         if (catalog):
@@ -74,7 +81,7 @@ class DataManager(object):
         '''
         Renombra un catalogo.
         '''
-        session =  self.__db_session()
+        session =  self.__data_manager.get_session()
         catalog = self.get_catalog(id, session)
         
         if (catalog):
@@ -91,7 +98,7 @@ class DataManager(object):
         Obtiene un catalog.
         '''
         if (not session):
-            session = self.__db_session()
+            session = self.__data_manager.get_session()
         
         catalogs = session.query(Catalog).filter(Catalog.catalog_id == id).all()
         
@@ -104,7 +111,11 @@ class DataManager(object):
         '''
         Retorna todos los catalogos disponibles.
         '''
-        return self.__db_session().query(Catalog).order_by(Catalog.name).all()
+        return self.__data_manager.get_session().query(Catalog).order_by(Catalog.name).all()
+
+class VolumeManager(object):
+    def __init__(self, data_manager):
+        self.__data_manager = data_manager
     
     def add_volume(self, catalog_id, label):
         '''
@@ -113,7 +124,7 @@ class DataManager(object):
         
         Retorna el ID del nuevo volumen.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         if self.get_volume_from_catalog_by_label(catalog_id, label, session):
             raise Errors.DuplicateNameError()
@@ -132,7 +143,7 @@ class DataManager(object):
         '''
         Elimina un volumen.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         volume = self.get_volume(id, session)
         if volume:
@@ -146,7 +157,7 @@ class DataManager(object):
         '''
         Renombra un volumen.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         if self.get_volume_from_catalog_by_label(catalog_id, label, session):
             raise Errors.DuplicateNameError()
@@ -165,7 +176,7 @@ class DataManager(object):
         '''
         Retorna todos los volumenes de un catalogo.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         catalog = session.query(Catalog).filter_by(catalog_id=catalog_id).one()
         volumes = catalog.volumes
 
@@ -176,7 +187,7 @@ class DataManager(object):
         Obtiene un volumen.
         '''
         if (not session):
-            session = self.__db_session()
+            session = self.__data_manager.get_session()
             
         volumes = session.query(Volume).filter(Volume.volume_id == volume_id).all()
         
@@ -192,7 +203,7 @@ class DataManager(object):
         '''
 
         if (not session):
-            session = self.__db_session()
+            session = self.__data_manager.get_session()
         
         session = self.__db_session()
         volumes = session.query(Volume).filter(Volume.catalog_id == catalog_id).filter(Volume.label == label).all()
@@ -208,7 +219,7 @@ class DataManager(object):
         y sin diectorio padre. 
         '''
         if (not session):
-            session = self.__db_session()
+            session = self.__data_manager.get_session()
              
         directories = session.query(VolumeDirectory).filter(VolumeDirectory.volume_id==volume_id).filter(VolumeDirectory.parent_directory_id==None).all()
                                                             
@@ -217,13 +228,13 @@ class DataManager(object):
                 return directories[0]
                 
         return None
-
+    
     def get_volume_directory(self, volume_id, directory_id, session=None):
         '''
         Obtiene un directorio de un volumen.
         '''
         if (not session):
-            session = self.__db_session()
+            session = self.__data_manager.get_session()
              
         directories = session.query(VolumeDirectory).filter(VolumeDirectory.volume_id==volume_id).filter(VolumeDirectory.directory_id==directory_id).all()
                                                             
@@ -247,7 +258,7 @@ class DataManager(object):
             'mtime':mtime
             }
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         if parent_directory_id == None:
             parent_directory = self.get_volume_root_directory(volume_id, session)
@@ -272,14 +283,14 @@ class DataManager(object):
             return True
         else:
             return False
-
+    
     def add_directory_to_volume(self, volume_id, directory, parent_directory_id=None):
         '''
         Agrega un subdirectorio a un directorio de un volumen.
         Si no se especifica un directorio destino el subdirectorio se crea en el directorio
         raiz del volumen.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         if parent_directory_id == None:
             parent_directory = self.get_volume_root_directory(volume_id, session)
@@ -298,13 +309,13 @@ class DataManager(object):
             return new_directory.directory_id
         else:
             return None
-        
+    
     def get_volume_content(self, volume_id, parent_directory_id=None):
         '''
         Obtiene el contenido de un directorio de un volumen.
         Si no se especifica un directorio se obtiene el contenido del directorio raiz.
         '''
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         
         if not parent_directory_id:
             parent_directory = self.get_volume_root_directory(volume_id, session)
@@ -320,4 +331,3 @@ class DataManager(object):
             return (directories, files, parent_directory.parent_directory_id)
         else:
             return None
-    

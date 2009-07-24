@@ -182,13 +182,13 @@ class CatalogListView(object):
         self.__volume = None    
    
     def load_volume(self, volume_id):
-        self.__volume = get_manager().get_data().get_volume(volume_id)
+        self.__volume = get_manager().get_volume_data().get_volume(volume_id)
         self.load_volume_directory(None)
 
     def load_volume_directory(self, directory_id):
         self.unload_directory()
         
-        (directories, files, parent_id) = get_manager().get_data().get_volume_content(self.__volume.volume_id, directory_id)
+        (directories, files, parent_id) = get_manager().get_volume_data().get_volume_content(self.__volume.volume_id, directory_id)
 
         if parent_id:
             self.__list_store.append([parent_id, '..', CatalogListView.ITEM_TYPE_PARENT, self.__imageDirectoryStock, '', ''])
@@ -271,11 +271,11 @@ class CatalogTreeView(object):
     def load_catalogs(self):
         self.__tree_store.clear()
         
-        catalogs = get_manager().get_data().get_catalogs()
+        catalogs = get_manager().get_catalog_data().get_catalogs()
         for catalog in catalogs:        
             iter = self.__tree_store.append(None, [catalog.catalog_id, catalog.name, self.__imageCatalogStock, CatalogTreeView.ITEM_TYPE_CATALOG, True] )
             
-            volumes = get_manager().get_data().get_volumes(catalog.catalog_id)
+            volumes = get_manager().get_volume_data().get_volumes(catalog.catalog_id)
             for volume in volumes:
                 self.__tree_store.append(iter, [volume.volume_id, volume.label, self.__imageVolumeStock, CatalogTreeView.ITEM_TYPE_VOLUME, True] )
 
@@ -373,14 +373,14 @@ class CatalogTreeView(object):
         
         if result == gtk.RESPONSE_YES:
             if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-                if (get_manager().get_data().del_catalog(id)):
+                if (get_manager().get_catalog_data().del_catalog(id)):
                     self.__tree_store.remove(iter)
                     
                     # El catalog seleccionado acaba de ser borrado, asi
                     # que apago el boton de Add Volume
                     self.__principal.catalog_selected(False)
             else:
-                if (get_manager().get_data().del_volume(id)):
+                if (get_manager().get_volume_data().del_volume(id)):
                     self.__tree_store.remove(iter)
 
             return (id, type)
@@ -393,10 +393,10 @@ class CatalogTreeView(object):
             new_text = self.__builder.get_object('entry_rename').get_text()
             
             if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-                if (get_manager().get_data().ren_catalog(id, new_text)):
+                if (get_manager().get_catalog_data().ren_catalog(id, new_text)):
                     self.__tree_store.set_value(iter, 1, new_text)
             else:
-                if (get_manager().get_data().ren_volume(id, new_text)):
+                if (get_manager().get_volume_data().ren_volume(id, new_text)):
                     self.__tree_store.set_value(iter, 1, new_text)
             self.__dialog_rename.response(gtk.RESPONSE_OK)
     

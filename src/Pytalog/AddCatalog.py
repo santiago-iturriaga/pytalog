@@ -30,7 +30,7 @@ class AddCatalog(object):
         name = self.__label_catalog_name.get_text()
         
         if (name):
-            get_manager().get_data().add_catalog(name)
+            get_manager().get_catalog_data().add_catalog(name)
             
             if (self.__updateWidget):
                 self.__updateWidget.update()

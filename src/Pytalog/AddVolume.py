@@ -55,7 +55,7 @@ class AddVolume(object):
 
     def show(self, parent_widget, catalog_id):
         self.__parent = parent_widget
-        self.__catalog = get_manager().get_data().get_catalog(catalog_id)
+        self.__catalog = get_manager().get_catalog_data().get_catalog(catalog_id)
 
         icon_media = self.__builder.get_object(AddVolume.ICON_MEDIA)
         icon_media_stock_id = icon_media.get_stock()[0]
@@ -101,7 +101,7 @@ class AddVolume(object):
             self.__selected = (dev_name, label, is_media)
     
     def add_volume(self, path, label):
-        new_volume_id = get_manager().get_data().add_volume(self.__catalog.catalog_id, label)
+        new_volume_id = get_manager().get_volume_data().add_volume(self.__catalog.catalog_id, label)
         if new_volume_id:
             self.__window.hide()
             
@@ -134,12 +134,12 @@ def load_directory_content(progress, volume_id, parent_id, path, base_path):
     (directories, files) = get_directory_content(path, base_path)
 
     #Agregar archivos a la DB.
-    get_manager().get_data().add_files_to_volume(volume_id, files, parent_id)
+    get_manager().get_volume_data().add_files_to_volume(volume_id, files, parent_id)
     
     for directory in directories:
         refresh_progress(progress, False)
         
-        new_directory_id = get_manager().get_data().add_directory_to_volume(volume_id, directory, parent_id)
+        new_directory_id = get_manager().get_volume_data().add_directory_to_volume(volume_id, directory, parent_id)
         
         directory_name = directory['name']
         directory_path = join(path, directory_name)
