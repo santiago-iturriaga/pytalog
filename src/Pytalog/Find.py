@@ -26,8 +26,8 @@ class Find(object):
         
     def on_buttonFind_clicked(self, widget, data=None):
         if self.__entryFindText.get_text():
-            print "entry: {0}".format(self.__entryFindText.get_text())
-        pass
+            text_to_find = self.__entryFindText.get_text()
+            
     
     def on_buttonCancel_clicked(self, widget, data=None):
         self.__window.destroy()

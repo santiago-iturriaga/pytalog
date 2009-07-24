@@ -4,7 +4,7 @@ Created on Jun 10, 2009
 @author: santiago
 '''
 
-from Pytalog.Lib.Data.DataManager import DataManager
+from Pytalog.Lib.Data.DataManager import DataManager, CatalogManager, VolumeManager
 
 class PytalogManager(object):
     '''
@@ -22,4 +22,16 @@ class PytalogManager(object):
         Retorna una instancia del manajador de datos.
         '''
         return self.__db_manager
+    
+    def get_catalog_data(self):
+        '''
+        Retorna una instancia del manejador de datos de catalogos.
+        '''
+        return CatalogManager(self.__db_manager) 
+    
+    def get_volume_data(self):
+        '''
+        Retorna una instancia del manejador de datos de volumenes.
+        '''
+        return VolumeManager(self.__db_manager)
     

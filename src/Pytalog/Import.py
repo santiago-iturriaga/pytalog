@@ -58,7 +58,7 @@ class Import(object):
         self.__intro_combostore_type.append([0, self.__importers[0].description()])
 
     def load_catalogs(self):
-        self.__catalogs = get_manager().get_data().get_catalogs()
+        self.__catalogs = get_manager().get_catalog_data().get_catalogs()
         for catalog in self.__catalogs:
             self.__intro_combostore_dest.append([catalog.catalog_id, catalog.name])
        

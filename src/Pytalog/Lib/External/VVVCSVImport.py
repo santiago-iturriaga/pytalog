@@ -45,7 +45,7 @@ class VVVCSVImport(object):
     
     def import_data(self, catalog_id, filename, status_callback=None):
         #try:
-        catalog = get_manager().get_data().get_catalog(catalog_id)
+        catalog = get_manager().get_catalog_data().get_catalog(catalog_id)
         created_volumes = {}
         simple_cache = None
         line = 0
@@ -67,13 +67,13 @@ class VVVCSVImport(object):
             # Obtengo o creo el volumen
             volume_id = created_volumes.get(clean_volume_label)           
             if not volume_id:
-                volume = get_manager().get_data().get_volume_from_catalog_by_label(catalog_id, clean_volume_label)
+                volume = get_manager().get_volume_data().get_volume_from_catalog_by_label(catalog_id, clean_volume_label)
                 if volume:
                     status_callback(None, "Error: a volume labeled '{0}' already exists on the specified catalog.".format(clean_volume_label),
                                     None, True)
                     yield False
                 else:
-                    volume_id = get_manager().get_data().add_volume(catalog_id, clean_volume_label)
+                    volume_id = get_manager().get_volume_data().add_volume(catalog_id, clean_volume_label)
                     created_volumes[clean_volume_label] = volume_id
 
             if not simple_cache:
@@ -109,7 +109,7 @@ class VVVCSVImport(object):
                     'size':clean_size, 
                     'mtime':clean_date }
             
-            get_manager().get_data().add_files_to_volume(volume_id, [file], directory_id)
+            get_manager().get_volume_data().add_files_to_volume(volume_id, [file], directory_id)
             
             line+=1
             yield True
@@ -122,7 +122,7 @@ class VVVCSVImport(object):
     def get_volume_root(self, simple_cache):
         root_id = simple_cache.get_path_id('/')
         if not root_id:
-            root = get_manager().get_data().get_volume_root_directory(simple_cache.volume_id)
+            root = get_manager().get_volume_data().get_volume_root_directory(simple_cache.volume_id)
             root_id = root.directory_id
             simple_cache.add_path('/', root_id)
 
@@ -139,7 +139,7 @@ class VVVCSVImport(object):
                 parent_directory_id = self.create_path(simple_cache, parent_path)
                 
         if directory_name and parent_directory_id:
-            directory_id = get_manager().get_data(). \
+            directory_id = get_manager().get_volume_data(). \
                 add_directory_to_volume(simple_cache.volume_id, 
                                         {'name': directory_name, 'full_name': full_path.lstrip('/')}, 
                                         parent_directory_id)
