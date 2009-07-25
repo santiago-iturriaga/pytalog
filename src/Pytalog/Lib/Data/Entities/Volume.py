@@ -52,9 +52,7 @@ class VolumeDirectory(Base):
     volume = relation(Volume, single_parent=True)
     
     parent_directory_id = Column(Integer, ForeignKey('volumesdirectories.directory_id'), nullable=True)
-    parent_directory = relation('VolumeDirectory', single_parent=True)
-    
-    files = relation("VolumeFile", order_by="VolumeFile.name")
+    #parent_directory = relation("VolumeDirectory", single_parent=True)
     
     def __init__(self, name, full_name, volume_id, parent_directory_id):
         self.name = name

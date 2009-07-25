@@ -159,11 +159,12 @@ class VolumeManager(object):
         '''
         session = self.__data_manager.get_session()
         
-        if self.get_volume_from_catalog_by_label(catalog_id, label, session):
-            raise Errors.DuplicateNameError()
-        
-        volume = self.get_volume(id, session)
-        if volume:
+        volume = self.get_volume(id, session)        
+
+        if volume:        
+            if self.get_volume_from_catalog_by_label(volume.catalog_id, label, session):
+                raise Errors.DuplicateNameError()
+
             volume.label = label
             session.add(volume)
             session.commit()
@@ -177,8 +178,7 @@ class VolumeManager(object):
         Retorna todos los volumenes de un catalogo.
         '''
         session = self.__data_manager.get_session()
-        catalog = session.query(Catalog).filter_by(catalog_id=catalog_id).one()
-        volumes = catalog.volumes
+        volumes = session.query(Volume).filter(Volume.catalog_id==catalog_id).order_by(Volume.label).all()
 
         return volumes
     
@@ -205,7 +205,7 @@ class VolumeManager(object):
         if (not session):
             session = self.__data_manager.get_session()
         
-        session = self.__db_session()
+        session = self.__data_manager.get_session()
         volumes = session.query(Volume).filter(Volume.catalog_id == catalog_id).filter(Volume.label == label).all()
         
         if volumes:
@@ -229,14 +229,14 @@ class VolumeManager(object):
                 
         return None
     
-    def get_volume_directory(self, volume_id, directory_id, session=None):
+    def get_directory(self, directory_id, session=None):
         '''
-        Obtiene un directorio de un volumen.
+        Obtiene un directorio.
         '''
         if (not session):
             session = self.__data_manager.get_session()
              
-        directories = session.query(VolumeDirectory).filter(VolumeDirectory.volume_id==volume_id).filter(VolumeDirectory.directory_id==directory_id).all()
+        directories = session.query(VolumeDirectory).filter(VolumeDirectory.directory_id==directory_id).all()
                                                             
         if directories:
             if len(directories) > 0:
@@ -310,24 +310,47 @@ class VolumeManager(object):
         else:
             return None
     
-    def get_volume_content(self, volume_id, parent_directory_id=None):
+    def get_volume_content(self, volume_id):
         '''
-        Obtiene el contenido de un directorio de un volumen.
-        Si no se especifica un directorio se obtiene el contenido del directorio raiz.
+        Obtiene el contenido de la raiz de un volumen.
         '''
         session = self.__data_manager.get_session()
         
-        if not parent_directory_id:
-            parent_directory = self.get_volume_root_directory(volume_id, session)
-        else:
-            parent_directory = self.get_volume_directory(volume_id, parent_directory_id, session)
-            
-        if parent_directory:
-            directories = session.query(VolumeDirectory). \
-                filter(VolumeDirectory.parent_directory_id==parent_directory.directory_id). \
-                order_by(VolumeDirectory.name).all()
-            files = parent_directory.files
+        directory = self.get_volume_root_directory(volume_id, session)
         
-            return (directories, files, parent_directory.parent_directory_id)
-        else:
-            return None
+        return self.get_directory_content(directory.directory_id)
+        
+    def get_directory_content(self, parent_directory_id):
+        '''
+        Obtiene el contenido de un directorio.
+        '''
+        session = self.__data_manager.get_session()
+            
+        parent_directory = self.get_directory(parent_directory_id, session)
+            
+        directories = session.query(VolumeDirectory). \
+            filter(VolumeDirectory.parent_directory_id==parent_directory_id). \
+            order_by(VolumeDirectory.name).all()
+        files = session.query(VolumeFile).filter(VolumeFile.parent_directory_id==parent_directory_id). \
+            order_by(VolumeFile.name).all()
+    
+        return (directories, files, parent_directory.parent_directory_id)
+
+class FindManager(object):
+    def __init__(self, data_manager):
+        self.__data_manager = data_manager
+        
+    def find_text(self, text):
+        '''
+        Realiza una busqueda por un LIKE %texto% en directorios y archivos en todos 
+        los catalogos y todos los volumenes.
+        
+        Retorna una tupla de (directorios, archivos) 
+        '''
+        session = self.__data_manager.get_session()
+        
+        directories = session.query(VolumeDirectory).filter(VolumeDirectory.name.like("%{0}%".format(text))).order_by(VolumeDirectory.name).all()
+        files = session.query(VolumeFile).filter(VolumeFile.name.like("%{0}%".format(text))).order_by(VolumeFile.name).all()
+        
+        return (directories, files)
+    
