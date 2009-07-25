@@ -80,3 +80,26 @@ class Find(object):
     
     def on_buttonCancel_clicked(self, widget, data=None):
         self.__window.destroy()
+        
+    def __get_item_from_path(self, path):
+        '''
+        Dado un path de un item en el listview retorna una tupla con (id, type, iter).
+        '''
+        iter = self.__list_store.get_iter(path)
+
+        id = self.__list_store.get_value(iter, 0)
+        type = self.__list_store.get_value(iter, 1)
+        
+        return (id, type, iter)
+        
+    def on_treeviewResult_row_activated(self, widget, path, view_column, data=None):
+        (id, type, iter) = self.__get_item_from_path(path)
+        volume_id = self.__list_store.get_value(iter, 8)
+        catalog_id = self.__list_store.get_value(iter, 6)
+        
+        if (type == Find.ITEM_TYPE_DIRECTORY):
+            self.__principal.load_directory(id, (catalog_id, volume_id))
+        elif (type == Find.ITEM_TYPE_FILE):
+            parent_id = self.__list_store.get_value(iter, 10)
+            self.__principal.load_directory(parent_id, (catalog_id, volume_id))
+            

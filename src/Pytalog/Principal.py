@@ -64,6 +64,16 @@ class Principal(object):
     def load_volume(self, volume_id):
         self.__list_view.load_volume(volume_id)
 
+    def load_directory(self, directory_id, selection=None):
+        if selection:
+            (catalog_id, volume_id) = selection
+            self.__tree_view.select_volume(catalog_id, volume_id)
+        else:
+            #TODO: obtenerlo de la base de datos.
+            pass
+        
+        self.__list_view.load_directory(directory_id)
+
     def add_catalog(self):
         AddCatalog().show(self)
         
@@ -287,6 +297,35 @@ class CatalogTreeView(object):
             for volume in volumes:
                 self.__tree_store.append(iter, [volume.volume_id, volume.label, self.__imageVolumeStock, CatalogTreeView.ITEM_TYPE_VOLUME, True] )
 
+    def select_volume(self, catalog_id, volume_id):
+        '''
+        Selecciona un volumen del treeview.
+        '''
+        model = self.__tree_view.get_model()
+        iter_catalog = model.get_iter_first()
+        ready = False
+        
+        while iter_catalog and not ready:
+            if model.get_value(iter_catalog, 0) == catalog_id:
+                iter_volume = model.iter_children(iter_catalog)
+                
+                while iter_volume and not ready:
+                    if model.get_value(iter_volume, 0) == volume_id:
+                        path = model.get_path(iter_volume)
+                        self.__tree_view.expand_to_path(path)
+                        self.__tree_view.scroll_to_cell(path)
+                        
+                        self.__tree_view.get_selection().unselect_all()
+                        self.__tree_view.get_selection().select_iter(iter_volume)
+                        
+                        ready = True
+                    else:
+                        iter_volume = model.iter_next(iter_volume)
+                        
+                ready = True
+            else:
+                iter_catalog = model.iter_next(iter_catalog)
+            
     def get_selected_item(self):
         treeselection = self.__tree_view.get_selection()
         (model, iter) = treeselection.get_selected()
