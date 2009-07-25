@@ -20,6 +20,8 @@ from Pytalog.Import import Import
 from Pytalog.Lib import get_manager
 from Pytalog.Humanize import HumanizeSize
 
+from Pytalog.Lib.Data import Errors
+
 class Principal(object):
     '''
     Code-behind de la ventana principal.
@@ -183,13 +185,19 @@ class CatalogListView(object):
    
     def load_volume(self, volume_id):
         self.__volume = get_manager().get_volume_data().get_volume(volume_id)
-        self.load_volume_directory(None)
+        self.load_directory()
 
-    def load_volume_directory(self, directory_id):
+    def load_directory(self, directory_id=None):
         self.unload_directory()
-        
-        (directories, files, parent_id) = get_manager().get_volume_data().get_volume_content(self.__volume.volume_id, directory_id)
 
+        if directory_id:
+            (directories, files, parent_id) = get_manager().get_volume_data().get_directory_content(directory_id)
+        else:
+            (directories, files, parent_id) = get_manager().get_volume_data().get_volume_content(self.__volume.volume_id)
+            
+        self.load_content(directories, files, parent_id)
+ 
+    def load_content(self, directories, files, parent_id):
         if parent_id:
             self.__list_store.append([parent_id, '..', CatalogListView.ITEM_TYPE_PARENT, self.__imageDirectoryStock, '', ''])
         
@@ -221,9 +229,9 @@ class CatalogListView(object):
         (id, type, iter) = self.__get_item_from_path(path)
         
         if (type == CatalogListView.ITEM_TYPE_DIRECTORY):
-            self.load_volume_directory(id)
+            self.load_directory(id)
         elif (type == CatalogListView.ITEM_TYPE_PARENT):
-            self.load_volume_directory(id)
+            self.load_directory(id)
             
     def tree_item_removed(self, id, tree_type):
         if self.__volume:
@@ -392,13 +400,17 @@ class CatalogTreeView(object):
             (id, type, path, iter) = self.__dialog_rename.info
             new_text = self.__builder.get_object('entry_rename').get_text()
             
-            if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
-                if (get_manager().get_catalog_data().ren_catalog(id, new_text)):
-                    self.__tree_store.set_value(iter, 1, new_text)
-            else:
-                if (get_manager().get_volume_data().ren_volume(id, new_text)):
-                    self.__tree_store.set_value(iter, 1, new_text)
-            self.__dialog_rename.response(gtk.RESPONSE_OK)
+            try:
+                if (type == CatalogTreeView.ITEM_TYPE_CATALOG):
+                    if (get_manager().get_catalog_data().ren_catalog(id, new_text)):
+                        self.__tree_store.set_value(iter, 1, new_text)
+                else:
+                    if (get_manager().get_volume_data().ren_volume(id, new_text)):
+                        self.__tree_store.set_value(iter, 1, new_text)
+                        
+                self.__dialog_rename.response(gtk.RESPONSE_OK)
+            except Errors.DuplicateNameError:
+                Dialogs.ShowErrorMessage(self.__principalWindow, "A volume with that name already exists in the catalog.")
     
     def on_button_rename_cancel_clicked(self, widget, data=None):
         if self.__dialog_rename:

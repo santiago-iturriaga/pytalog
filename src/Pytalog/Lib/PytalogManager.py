@@ -1,10 +1,12 @@
+#coding=utf-8
+
 '''
 Created on Jun 10, 2009
 
 @author: santiago
 '''
 
-from Pytalog.Lib.Data.DataManager import DataManager, CatalogManager, VolumeManager
+from Pytalog.Lib.Data.DataManager import DataManager, CatalogManager, VolumeManager, FindManager
 
 class PytalogManager(object):
     '''
@@ -35,3 +37,8 @@ class PytalogManager(object):
         '''
         return VolumeManager(self.__db_manager)
     
+    def get_find_data(self):
+        '''
+        Retorna una instanca del manejador de datos de búsquedas.
+        '''
+        return FindManager(self.__db_manager)

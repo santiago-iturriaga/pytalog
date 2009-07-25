@@ -2,12 +2,14 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="liststoreResult">
+  <object class="GtkListStore" id="liststore_result">
     <columns>
       <!-- column-name id -->
       <column type="gint"/>
       <!-- column-name type -->
       <column type="gint"/>
+      <!-- column-name stock_id -->
+      <column type="gchararray"/>
       <!-- column-name name -->
       <column type="gchararray"/>
       <!-- column-name size -->
@@ -24,8 +26,6 @@
       <column type="gchararray"/>
       <!-- column-name parent_folder_id -->
       <column type="gint"/>
-      <!-- column-name stock_id -->
-      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkWindow" id="window">
@@ -132,86 +132,95 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="treeviewResult">
-            <property name="height_request">100</property>
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="model">liststoreResult</property>
-            <property name="reorderable">True</property>
-            <property name="rules_hint">True</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
             <child>
-              <object class="GtkTreeViewColumn" id="treeviewResultColName">
-                <property name="resizable">True</property>
-                <property name="min_width">120</property>
-                <property name="title">Name</property>
-                <property name="clickable">True</property>
+              <object class="GtkTreeView" id="treeviewResult">
+                <property name="height_request">100</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="model">liststore_result</property>
+                <property name="reorderable">True</property>
+                <property name="rules_hint">True</property>
+                <property name="search_column">0</property>
                 <child>
-                  <object class="GtkCellRendererPixbuf" id="treeviewResultCellIcon"/>
-                  <attributes>
-                    <attribute name="stock-id">6</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewResultColName">
+                    <property name="resizable">True</property>
+                    <property name="min_width">120</property>
+                    <property name="title">Name</property>
+                    <property name="clickable">True</property>
+                    <child>
+                      <object class="GtkCellRendererPixbuf" id="treeviewResultCellIcon"/>
+                      <attributes>
+                        <attribute name="stock-id">2</attribute>
+                      </attributes>
+                    </child>
+                    <child>
+                      <object class="GtkCellRendererText" id="treeviewResultCellName"/>
+                      <attributes>
+                        <attribute name="text">3</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
                 <child>
-                  <object class="GtkCellRendererText" id="treeviewResultCellName"/>
-                  <attributes>
-                    <attribute name="text">2</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewResultColSize">
+                    <property name="resizable">True</property>
+                    <property name="min_width">50</property>
+                    <property name="title">Size</property>
+                    <property name="clickable">True</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="treeviewResultCellSize"/>
+                      <attributes>
+                        <attribute name="text">4</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewResultColSize">
-                <property name="resizable">True</property>
-                <property name="min_width">50</property>
-                <property name="title">Size</property>
-                <property name="clickable">True</property>
                 <child>
-                  <object class="GtkCellRendererText" id="treeviewResultCellSize"/>
-                  <attributes>
-                    <attribute name="text">3</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewResultColCatalog">
+                    <property name="resizable">True</property>
+                    <property name="min_width">80</property>
+                    <property name="title">Catalog</property>
+                    <property name="clickable">True</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="treeviewResultCellCatalog"/>
+                      <attributes>
+                        <attribute name="text">5</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewResultColCatalog">
-                <property name="resizable">True</property>
-                <property name="min_width">80</property>
-                <property name="title">Catalog</property>
-                <property name="clickable">True</property>
                 <child>
-                  <object class="GtkCellRendererText" id="treeviewResultCellCatalog"/>
-                  <attributes>
-                    <attribute name="text">3</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewResultColVolume">
+                    <property name="resizable">True</property>
+                    <property name="min_width">80</property>
+                    <property name="title">Volume</property>
+                    <property name="clickable">True</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="treeviewResultCellVolume"/>
+                      <attributes>
+                        <attribute name="text">7</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewResultColVolume">
-                <property name="resizable">True</property>
-                <property name="min_width">80</property>
-                <property name="title">Volume</property>
-                <property name="clickable">True</property>
                 <child>
-                  <object class="GtkCellRendererText" id="treeviewResultCellVolume"/>
-                  <attributes>
-                    <attribute name="text">5</attribute>
-                  </attributes>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewResultColParent">
-                <property name="resizable">True</property>
-                <property name="min_width">50</property>
-                <property name="title">Parent</property>
-                <property name="clickable">True</property>
-                <child>
-                  <object class="GtkCellRendererText" id="treeviewResultCellParent"/>
-                  <attributes>
-                    <attribute name="text">7</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewResultColParent">
+                    <property name="resizable">True</property>
+                    <property name="min_width">50</property>
+                    <property name="title">Parent</property>
+                    <property name="clickable">True</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="treeviewResultCellParent"/>
+                      <attributes>
+                        <attribute name="text">9</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
               </object>
             </child>
@@ -232,5 +241,13 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image_file">
+    <property name="visible">True</property>
+    <property name="stock">gtk-file</property>
+  </object>
+  <object class="GtkImage" id="image_directory">
+    <property name="visible">True</property>
+    <property name="stock">gtk-directory</property>
   </object>
 </interface>
