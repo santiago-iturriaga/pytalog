@@ -30,6 +30,7 @@ class Principal(object):
     WINDOW_MAIN = 'window'
     TOOLBAR = 'toolbar_principal'
     TOOLBAR_ADD_VOLUME = 'toolbutton_add_volume'
+    MENU_ADD_VOLUME = 'menuitemAddVolume'
        
     def __init__(self):
         self.__builder = gtk.Builder()
@@ -44,6 +45,8 @@ class Principal(object):
         self.__tree_view.load_catalogs()
 
         self.__list_view = CatalogListView(self, self.__builder)
+        
+        self.__menu_add_volume = self.__builder.get_object(Principal.MENU_ADD_VOLUME)
 
     def show(self):
         self.__principal.show()
@@ -82,6 +85,7 @@ class Principal(object):
         
     def catalog_selected(self, is_catalog_selected):
         self.__toolbar_add_volume.set_sensitive(is_catalog_selected)
+        self.__menu_add_volume.set_sensitive(is_catalog_selected)
 
     '''
     Signals del menu principal.
@@ -100,6 +104,15 @@ class Principal(object):
         import_window = Import(self)
         import_window.show()
         
+    def on_menuitemAddVolume_activate(self, widget, data=None):
+        print "coco"
+        selected = self.__tree_view.get_selected_item()
+        if selected:
+            (id, type) = selected
+            self.add_volume(id)
+        else:
+            print "Error, catalog missing?"
+        
     '''
     Signals del toolbar
     '''
@@ -112,6 +125,8 @@ class Principal(object):
         if selected:
             (id, type) = selected
             self.add_volume(id)
+        else:
+            print "Error, catalog missing?"
             
     def on_toolbutton_find_clicked(self, widget, data=None):
         find = Find(self)

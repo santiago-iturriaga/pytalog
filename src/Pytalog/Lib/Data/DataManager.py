@@ -340,7 +340,7 @@ class FindManager(object):
     def __init__(self, data_manager):
         self.__data_manager = data_manager
         
-    def find_text(self, text):
+    def find_text(self, text, files=True, dirs=True):
         '''
         Realiza una busqueda por un LIKE %texto% en directorios y archivos en todos 
         los catalogos y todos los volumenes.
@@ -349,8 +349,15 @@ class FindManager(object):
         '''
         session = self.__data_manager.get_session()
         
-        directories = session.query(VolumeDirectory).filter(VolumeDirectory.name.like("%{0}%".format(text))).order_by(VolumeDirectory.name).all()
-        files = session.query(VolumeFile).filter(VolumeFile.name.like("%{0}%".format(text))).order_by(VolumeFile.name).all()
+        if dirs:
+            directories = session.query(VolumeDirectory).filter(VolumeDirectory.name.like("%{0}%".format(text))).order_by(VolumeDirectory.name).all()
+        else:
+            directories = []
+            
+        if files:
+            files = session.query(VolumeFile).filter(VolumeFile.name.like("%{0}%".format(text))).order_by(VolumeFile.name).all()
+        else:
+            files = []
         
         return (directories, files)
     
