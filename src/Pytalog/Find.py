@@ -21,6 +21,12 @@ class Find(object):
 
     LIST_STORE = "liststore_result"
 
+    STATUSBAR = "statusbar_find"
+
+    RADIO_FILES_N_DIRS = "radiobuttonFilesAndDir"
+    RADIO_FILES = "radiobuttonFiles"
+    RADIO_DIRS = "radiobuttonDir"
+
     ITEM_TYPE_DIRECTORY = 0
     ITEM_TYPE_FILE = 1
 
@@ -41,14 +47,28 @@ class Find(object):
         self.__image_directory_stockid = image_directory_control.get_stock()[0]
         
         self.__list_store = self.__builder.get_object(Find.LIST_STORE)
-    
+        
+        self.__statusbar = self.__builder.get_object(Find.STATUSBAR)
+        self.__statusbar_context_id = None
+        
+        self.__radio_files_n_dirs = self.__builder.get_object(Find.RADIO_FILES_N_DIRS)
+        self.__radio_files = self.__builder.get_object(Find.RADIO_FILES)
+        self.__radio_dirs = self.__builder.get_object(Find.RADIO_DIRS)
     def show(self):
         self.__window.show()
         
     def on_buttonFind_clicked(self, widget, data=None):
         if self.__entryFindText.get_text():
+            if self.__statusbar_context_id: self.__statusbar.pop(self.__statusbar_context_id)
+            self.__statusbar_context_id = self.__statusbar.get_context_id("Find")
+            
+            files = True
+            dirs = True
+            if self.__radio_files.get_active(): dirs=False
+            elif self.__radio_dirs.get_active(): files=False 
+            
             text_to_find = self.__entryFindText.get_text()
-            (directories, files) = get_manager().get_find_data().find_text(text_to_find)
+            (directories, files) = get_manager().get_find_data().find_text(text_to_find, files, dirs)
             
             self.__list_store.clear()
             
@@ -77,6 +97,8 @@ class Find(object):
                                           file.volume.volume_id,
                                           file.parent_directory.name,
                                           file.parent_directory_id])
+                
+            self.__statusbar.push(self.__statusbar_context_id, ("Total items found: %s." % (len(files)+len(directories))))
     
     def on_buttonCancel_clicked(self, widget, data=None):
         self.__window.destroy()

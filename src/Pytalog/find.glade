@@ -29,9 +29,9 @@
     </columns>
   </object>
   <object class="GtkWindow" id="window">
-    <property name="width_request">400</property>
-    <property name="height_request">400</property>
     <property name="title" translatable="yes">Find</property>
+    <property name="default_width">540</property>
+    <property name="default_height">520</property>
     <property name="icon_name">face-monkey</property>
     <accelerator key="Return" signal="activate-default"/>
     <child>
@@ -45,6 +45,7 @@
             <child>
               <object class="GtkTable" id="table1">
                 <property name="visible">True</property>
+                <property name="n_rows">4</property>
                 <property name="n_columns">2</property>
                 <child>
                   <object class="GtkLabel" id="labelFindText">
@@ -52,7 +53,8 @@
                     <property name="label" translatable="yes">Find name:</property>
                   </object>
                   <packing>
-                    <property name="x_options">GTK_FILL</property>
+                    <property name="x_options"></property>
+                    <property name="y_options"></property>
                     <property name="x_padding">5</property>
                     <property name="y_padding">5</property>
                   </packing>
@@ -70,6 +72,74 @@
                     <property name="x_padding">5</property>
                     <property name="y_padding">5</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="radiobuttonFilesAndDir">
+                    <property name="label" translatable="yes">Search for files and directories</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="radiobuttonFiles">
+                    <property name="label" translatable="yes">Search for files only</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">radiobuttonFilesAndDir</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="radiobuttonDir">
+                    <property name="label" translatable="yes">Search for directories only</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">radiobuttonFilesAndDir</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Search for:</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options"></property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -150,8 +220,10 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewResultColName">
                     <property name="resizable">True</property>
-                    <property name="min_width">120</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">250</property>
                     <property name="title">Name</property>
+                    <property name="expand">True</property>
                     <property name="clickable">True</property>
                     <child>
                       <object class="GtkCellRendererPixbuf" id="treeviewResultCellIcon"/>
@@ -170,7 +242,8 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewResultColSize">
                     <property name="resizable">True</property>
-                    <property name="min_width">50</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">80</property>
                     <property name="title">Size</property>
                     <property name="clickable">True</property>
                     <child>
@@ -184,7 +257,8 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewResultColCatalog">
                     <property name="resizable">True</property>
-                    <property name="min_width">80</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">100</property>
                     <property name="title">Catalog</property>
                     <property name="clickable">True</property>
                     <child>
@@ -198,7 +272,8 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewResultColVolume">
                     <property name="resizable">True</property>
-                    <property name="min_width">80</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">100</property>
                     <property name="title">Volume</property>
                     <property name="clickable">True</property>
                     <child>
@@ -212,7 +287,8 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewResultColParent">
                     <property name="resizable">True</property>
-                    <property name="min_width">50</property>
+                    <property name="sizing">fixed</property>
+                    <property name="fixed_width">200</property>
                     <property name="title">Parent</property>
                     <property name="clickable">True</property>
                     <child>
@@ -231,7 +307,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkStatusbar" id="statusbar1">
+          <object class="GtkStatusbar" id="statusbar_find">
             <property name="visible">True</property>
             <property name="spacing">2</property>
           </object>

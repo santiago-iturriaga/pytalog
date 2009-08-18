@@ -65,10 +65,14 @@ class AddVolume(object):
         
         drives = sysinfo.get_drives()
         if drives:
+            self.__drives = drives
             for drive in drives:
-                self.__drives = drives
                 self.__liststore.prepend([drive.dev_name, icon_media_stock_id, drive.label, True])
-                self.__window.show()
+                
+            self.__window.show()
+        else:
+            Dialogs.ShowErrorMessage(self.__window, "No mounted removable device could be found. Please mount a removable device and try again.")
+            self.__window.destroy()
    
     def on_volume_cancel_clicked(self, widget, data=None):
         self.__window.destroy()

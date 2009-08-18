@@ -58,9 +58,21 @@
                       <object class="GtkImageMenuItem" id="menuitemNewCatalog">
                         <property name="label" translatable="yes">New catalog...</property>
                         <property name="visible">True</property>
+                        <property name="tooltip_text" translatable="yes">Creates a new catalog to store volumes.</property>
                         <property name="image">image_new_catalog</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_menuitemNewCatalog_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menuitemAddVolume">
+                        <property name="label" translatable="yes">Add volume...</property>
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="tooltip_text" translatable="yes">Adds a new volume to de selected catalog.</property>
+                        <property name="image">image2</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menuitemAddVolume_activate"/>
                       </object>
                     </child>
                     <child>
@@ -284,7 +296,10 @@
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_name">
                         <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="fixed_width">250</property>
                         <property name="title">Name</property>
+                        <property name="expand">True</property>
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <child>
@@ -304,6 +319,8 @@
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_size">
                         <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="fixed_width">80</property>
                         <property name="title">Size</property>
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
@@ -318,6 +335,8 @@
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewFiles_col_mtime">
                         <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="fixed_width">200</property>
                         <property name="title">Modification time</property>
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
@@ -499,5 +518,9 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="stock">gtk-find</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="stock">gtk-cdrom</property>
   </object>
 </interface>
