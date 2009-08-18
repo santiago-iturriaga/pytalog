@@ -102,4 +102,4 @@ class Find(object):
         elif (type == Find.ITEM_TYPE_FILE):
             parent_id = self.__list_store.get_value(iter, 10)
             self.__principal.load_directory(parent_id, (catalog_id, volume_id))
-            
+
