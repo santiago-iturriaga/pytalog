@@ -1,0 +1,1 @@
+Pytalog is a removable media (like CDs or DVDs) catalog application for Linux written in Python+Gtk+SQLite.
